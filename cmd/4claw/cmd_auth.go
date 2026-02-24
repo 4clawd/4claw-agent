@@ -225,7 +225,7 @@ func authLoginGoogleAntigravity() {
 		}
 	}
 
-	fmt.Println("\n鉁?Google Antigravity login successful!")
+	fmt.Println("\nGoogle Antigravity login successful!")
 	fmt.Println("Default model set to: gemini-flash")
 	fmt.Println("Try it: 4claw agent -m \"Hello world\"")
 }
@@ -414,7 +414,7 @@ func authStatusCmd() {
 	fmt.Println("\nAuthenticated Providers:")
 	fmt.Println("------------------------")
 	for provider, cred := range store.Credentials {
-		status := "active"
+        status := "available"
 		if cred.IsExpired() {
 			status = "expired"
 		} else if cred.NeedsRefresh() {
@@ -479,9 +479,9 @@ func authModelsCmd() {
 	fmt.Println("Available Antigravity Models:")
 	fmt.Println("-----------------------------")
 	for _, m := range models {
-		status := "鉁?
+        status := "available"
 		if m.IsExhausted {
-			status = "鉁?(quota exhausted)"
+            status = "unavailable (quota exhausted)"
 		}
 		name := m.ID
 		if m.DisplayName != "" {

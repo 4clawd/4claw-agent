@@ -37,7 +37,6 @@ func skillsHelp() {
 
 func skillsListCmd(loader *skills.SkillsLoader) {
 	allSkills := loader.ListSkills()
-
 	if len(allSkills) == 0 {
 		fmt.Println("No skills installed.")
 		return
@@ -46,7 +45,7 @@ func skillsListCmd(loader *skills.SkillsLoader) {
 	fmt.Println("\nInstalled Skills:")
 	fmt.Println("------------------")
 	for _, skill := range allSkills {
-		fmt.Printf("  鉁?%s (%s)\n", skill.Name, skill.Source)
+		fmt.Printf("  - %s (%s)\n", skill.Name, skill.Source)
 		if skill.Description != "" {
 			fmt.Printf("    %s\n", skill.Description)
 		}
@@ -60,7 +59,6 @@ func skillsInstallCmd(installer *skills.SkillInstaller, cfg *config.Config) {
 		return
 	}
 
-	// Check for --registry flag.
 	if os.Args[3] == "--registry" {
 		if len(os.Args) < 6 {
 			fmt.Println("Usage: 4claw skills install --registry <name> <slug>")
@@ -73,7 +71,6 @@ func skillsInstallCmd(installer *skills.SkillInstaller, cfg *config.Config) {
 		return
 	}
 
-	// Default: install from GitHub (backward compatible).
 	repo := os.Args[3]
 	fmt.Printf("Installing skill from %s...\n", repo)
 
@@ -81,24 +78,23 @@ func skillsInstallCmd(installer *skills.SkillInstaller, cfg *config.Config) {
 	defer cancel()
 
 	if err := installer.InstallFromGitHub(ctx, repo); err != nil {
-		fmt.Printf("\u2717 Failed to install skill: %v\n", err)
+		fmt.Printf("[ERROR] Failed to install skill: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("\u2713 Skill '%s' installed successfully!\n", filepath.Base(repo))
+	fmt.Printf("[OK] Skill '%s' installed successfully.\n", filepath.Base(repo))
 }
 
-// skillsInstallFromRegistry installs a skill from a named registry (e.g. clawhub).
 func skillsInstallFromRegistry(cfg *config.Config, registryName, slug string) {
 	err := utils.ValidateSkillIdentifier(registryName)
 	if err != nil {
-		fmt.Printf("\u2717 Invalid registry name: %v\n", err)
+		fmt.Printf("[ERROR] Invalid registry name: %v\n", err)
 		os.Exit(1)
 	}
 
 	err = utils.ValidateSkillIdentifier(slug)
 	if err != nil {
-		fmt.Printf("\u2717 Invalid slug: %v\n", err)
+		fmt.Printf("[ERROR] Invalid slug: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -111,7 +107,7 @@ func skillsInstallFromRegistry(cfg *config.Config, registryName, slug string) {
 
 	registry := registryMgr.GetRegistry(registryName)
 	if registry == nil {
-		fmt.Printf("\u2717 Registry '%s' not found or not enabled. Check your config.json.\n", registryName)
+		fmt.Printf("[ERROR] Registry '%s' not found or not enabled. Check your config.json.\n", registryName)
 		os.Exit(1)
 	}
 
@@ -119,7 +115,7 @@ func skillsInstallFromRegistry(cfg *config.Config, registryName, slug string) {
 	targetDir := filepath.Join(workspace, "skills", slug)
 
 	if _, err = os.Stat(targetDir); err == nil {
-		fmt.Printf("\u2717 Skill '%s' already installed at %s\n", slug, targetDir)
+		fmt.Printf("[ERROR] Skill '%s' is already installed at %s\n", slug, targetDir)
 		os.Exit(1)
 	}
 
@@ -127,7 +123,7 @@ func skillsInstallFromRegistry(cfg *config.Config, registryName, slug string) {
 	defer cancel()
 
 	if err = os.MkdirAll(filepath.Join(workspace, "skills"), 0o755); err != nil {
-		fmt.Printf("\u2717 Failed to create skills directory: %v\n", err)
+		fmt.Printf("[ERROR] Failed to create skills directory: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -135,26 +131,26 @@ func skillsInstallFromRegistry(cfg *config.Config, registryName, slug string) {
 	if err != nil {
 		rmErr := os.RemoveAll(targetDir)
 		if rmErr != nil {
-			fmt.Printf("\u2717 Failed to remove partial install: %v\n", rmErr)
+			fmt.Printf("[ERROR] Failed to remove partial install: %v\n", rmErr)
 		}
-		fmt.Printf("\u2717 Failed to install skill: %v\n", err)
+		fmt.Printf("[ERROR] Failed to install skill: %v\n", err)
 		os.Exit(1)
 	}
 
 	if result.IsMalwareBlocked {
 		rmErr := os.RemoveAll(targetDir)
 		if rmErr != nil {
-			fmt.Printf("\u2717 Failed to remove partial install: %v\n", rmErr)
+			fmt.Printf("[ERROR] Failed to remove partial install: %v\n", rmErr)
 		}
-		fmt.Printf("\u2717 Skill '%s' is flagged as malicious and cannot be installed.\n", slug)
+		fmt.Printf("[ERROR] Skill '%s' is flagged as malicious and cannot be installed.\n", slug)
 		os.Exit(1)
 	}
 
 	if result.IsSuspicious {
-		fmt.Printf("\u26a0\ufe0f  Warning: skill '%s' is flagged as suspicious.\n", slug)
+		fmt.Printf("[WARN] Skill '%s' is flagged as suspicious.\n", slug)
 	}
 
-	fmt.Printf("\u2713 Skill '%s' v%s installed successfully!\n", slug, result.Version)
+	fmt.Printf("[OK] Skill '%s' v%s installed successfully.\n", slug, result.Version)
 	if result.Summary != "" {
 		fmt.Printf("  %s\n", result.Summary)
 	}
@@ -164,18 +160,18 @@ func skillsRemoveCmd(installer *skills.SkillInstaller, skillName string) {
 	fmt.Printf("Removing skill '%s'...\n", skillName)
 
 	if err := installer.Uninstall(skillName); err != nil {
-		fmt.Printf("鉁?Failed to remove skill: %v\n", err)
+		fmt.Printf("[ERROR] Failed to remove skill: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("鉁?Skill '%s' removed successfully!\n", skillName)
+	fmt.Printf("[OK] Skill '%s' removed successfully.\n", skillName)
 }
 
 func skillsInstallBuiltinCmd(workspace string) {
 	builtinSkillsDir := "./4claw/skills"
 	workspaceSkillsDir := filepath.Join(workspace, "skills")
 
-	fmt.Printf("Copying builtin skills to workspace...\n")
+	fmt.Println("Copying builtin skills to workspace...")
 
 	skillsToInstall := []string{
 		"weather",
@@ -189,22 +185,22 @@ func skillsInstallBuiltinCmd(workspace string) {
 		workspacePath := filepath.Join(workspaceSkillsDir, skillName)
 
 		if _, err := os.Stat(builtinPath); err != nil {
-			fmt.Printf("鈯?Builtin skill '%s' not found: %v\n", skillName, err)
+			fmt.Printf("[WARN] Builtin skill '%s' not found: %v\n", skillName, err)
 			continue
 		}
 
 		if err := os.MkdirAll(workspacePath, 0o755); err != nil {
-			fmt.Printf("鉁?Failed to create directory for %s: %v\n", skillName, err)
+			fmt.Printf("[ERROR] Failed to create directory for %s: %v\n", skillName, err)
 			continue
 		}
 
 		if err := copyDirectory(builtinPath, workspacePath); err != nil {
-			fmt.Printf("鉁?Failed to copy %s: %v\n", skillName, err)
+			fmt.Printf("[ERROR] Failed to copy %s: %v\n", skillName, err)
 		}
 	}
 
-	fmt.Println("\n鉁?All builtin skills installed!")
-	fmt.Println("Now you can use them in your workspace.")
+	fmt.Println("\n[OK] Builtin skills installation finished.")
+	fmt.Println("You can now use them in your workspace.")
 }
 
 func skillsListBuiltinCmd() {
@@ -230,31 +226,27 @@ func skillsListBuiltinCmd() {
 	}
 
 	for _, entry := range entries {
-		if entry.IsDir() {
-			skillName := entry.Name()
-			skillFile := filepath.Join(builtinSkillsDir, skillName, "SKILL.md")
+		if !entry.IsDir() {
+			continue
+		}
 
-			description := "No description"
-			if _, err := os.Stat(skillFile); err == nil {
-				data, err := os.ReadFile(skillFile)
-				if err == nil {
-					content := string(data)
-					if idx := strings.Index(content, "\n"); idx > 0 {
-						firstLine := content[:idx]
-						if strings.Contains(firstLine, "description:") {
-							descLine := strings.Index(content[idx:], "\n")
-							if descLine > 0 {
-								description = strings.TrimSpace(content[idx+descLine : idx+descLine])
-							}
-						}
-					}
+		skillName := entry.Name()
+		skillFile := filepath.Join(builtinSkillsDir, skillName, "SKILL.md")
+		description := "No description"
+
+		if data, readErr := os.ReadFile(skillFile); readErr == nil {
+			for _, line := range strings.Split(string(data), "\n") {
+				trimmed := strings.TrimSpace(line)
+				if strings.HasPrefix(strings.ToLower(trimmed), "description:") {
+					description = strings.TrimSpace(strings.TrimPrefix(trimmed, "description:"))
+					break
 				}
 			}
-			status := "鉁?
-			fmt.Printf("  %s  %s\n", status, entry.Name())
-			if description != "" {
-				fmt.Printf("     %s\n", description)
-			}
+		}
+
+		fmt.Printf("  [OK] %s\n", skillName)
+		if description != "" {
+			fmt.Printf("       %s\n", description)
 		}
 	}
 }
@@ -267,7 +259,7 @@ func skillsSearchCmd(installer *skills.SkillInstaller) {
 
 	availableSkills, err := installer.ListAvailableSkills(ctx)
 	if err != nil {
-		fmt.Printf("鉁?Failed to fetch skills list: %v\n", err)
+		fmt.Printf("[ERROR] Failed to fetch skills list: %v\n", err)
 		return
 	}
 
@@ -279,14 +271,14 @@ func skillsSearchCmd(installer *skills.SkillInstaller) {
 	fmt.Printf("\nAvailable Skills (%d):\n", len(availableSkills))
 	fmt.Println("--------------------")
 	for _, skill := range availableSkills {
-		fmt.Printf("  馃摝 %s\n", skill.Name)
-		fmt.Printf("     %s\n", skill.Description)
-		fmt.Printf("     Repo: %s\n", skill.Repository)
+		fmt.Printf("  - %s\n", skill.Name)
+		fmt.Printf("    %s\n", skill.Description)
+		fmt.Printf("    Repo: %s\n", skill.Repository)
 		if skill.Author != "" {
-			fmt.Printf("     Author: %s\n", skill.Author)
+			fmt.Printf("    Author: %s\n", skill.Author)
 		}
 		if len(skill.Tags) > 0 {
-			fmt.Printf("     Tags: %v\n", skill.Tags)
+			fmt.Printf("    Tags: %v\n", skill.Tags)
 		}
 		fmt.Println()
 	}
@@ -295,11 +287,11 @@ func skillsSearchCmd(installer *skills.SkillInstaller) {
 func skillsShowCmd(loader *skills.SkillsLoader, skillName string) {
 	content, ok := loader.LoadSkill(skillName)
 	if !ok {
-		fmt.Printf("鉁?Skill '%s' not found\n", skillName)
+		fmt.Printf("[ERROR] Skill '%s' not found\n", skillName)
 		return
 	}
 
-	fmt.Printf("\n馃摝 Skill: %s\n", skillName)
+	fmt.Printf("\nSkill: %s\n", skillName)
 	fmt.Println("----------------------")
 	fmt.Println(content)
 }

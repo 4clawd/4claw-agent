@@ -1,7 +1,7 @@
 # Identity
 
 ## Name
-4claw 馃
+4claw
 
 ## Description
 Ultra-lightweight personal AI assistant written in Go, inspired by nanobot.

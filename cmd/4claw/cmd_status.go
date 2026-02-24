@@ -28,16 +28,16 @@ func statusCmd() {
 	fmt.Println()
 
 	if _, err := os.Stat(configPath); err == nil {
-		fmt.Println("Config:", configPath, "鉁?)
+		fmt.Println("Config:", configPath, "[OK]")
 	} else {
-		fmt.Println("Config:", configPath, "鉁?)
+		fmt.Println("Config:", configPath, "[MISSING]")
 	}
 
 	workspace := cfg.WorkspacePath()
 	if _, err := os.Stat(workspace); err == nil {
-		fmt.Println("Workspace:", workspace, "鉁?)
+		fmt.Println("Workspace:", workspace, "[OK]")
 	} else {
-		fmt.Println("Workspace:", workspace, "鉁?)
+		fmt.Println("Workspace:", workspace, "[MISSING]")
 	}
 
 	if _, err := os.Stat(configPath); err == nil {
@@ -59,10 +59,11 @@ func statusCmd() {
 
 		status := func(enabled bool) string {
 			if enabled {
-				return "鉁?
+				return "set"
 			}
 			return "not set"
 		}
+
 		fmt.Println("OpenRouter API:", status(hasOpenRouter))
 		fmt.Println("Anthropic API:", status(hasAnthropic))
 		fmt.Println("OpenAI API:", status(hasOpenAI))
@@ -74,13 +75,15 @@ func statusCmd() {
 		fmt.Println("DeepSeek API:", status(hasDeepSeek))
 		fmt.Println("VolcEngine API:", status(hasVolcEngine))
 		fmt.Println("Nvidia API:", status(hasNvidia))
+
 		if hasVLLM {
-			fmt.Printf("vLLM/Local: 鉁?%s\n", cfg.Providers.VLLM.APIBase)
+			fmt.Printf("vLLM/Local: set (%s)\n", cfg.Providers.VLLM.APIBase)
 		} else {
 			fmt.Println("vLLM/Local: not set")
 		}
+
 		if hasOllama {
-			fmt.Printf("Ollama: 鉁?%s\n", cfg.Providers.Ollama.APIBase)
+			fmt.Printf("Ollama: set (%s)\n", cfg.Providers.Ollama.APIBase)
 		} else {
 			fmt.Println("Ollama: not set")
 		}
@@ -89,13 +92,13 @@ func statusCmd() {
 		if store != nil && len(store.Credentials) > 0 {
 			fmt.Println("\nOAuth/Token Auth:")
 			for provider, cred := range store.Credentials {
-				status := "authenticated"
+				authStatus := "authenticated"
 				if cred.IsExpired() {
-					status = "expired"
+					authStatus = "expired"
 				} else if cred.NeedsRefresh() {
-					status = "needs refresh"
+					authStatus = "needs refresh"
 				}
-				fmt.Printf("  %s (%s): %s\n", provider, cred.AuthMethod, status)
+				fmt.Printf("  %s (%s): %s\n", provider, cred.AuthMethod, authStatus)
 			}
 		}
 	}

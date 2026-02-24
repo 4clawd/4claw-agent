@@ -24,7 +24,7 @@ var (
 	goVersion string
 )
 
-const logo = "馃"
+const logo = "4C"
 
 // formatVersion returns the version string with optional git commit
 func formatVersion() string {

@@ -192,15 +192,15 @@ func cronAddCmd(storePath string) {
 		return
 	}
 
-	fmt.Printf("鉁?Added job '%s' (%s)\n", job.Name, job.ID)
+	fmt.Printf("[OK] Added job '%s' (%s)\n", job.Name, job.ID)
 }
 
 func cronRemoveCmd(storePath, jobID string) {
 	cs := cron.NewCronService(storePath, nil)
 	if cs.RemoveJob(jobID) {
-		fmt.Printf("鉁?Removed job %s\n", jobID)
+		fmt.Printf("[OK] Removed job %s\n", jobID)
 	} else {
-		fmt.Printf("鉁?Job %s not found\n", jobID)
+		fmt.Printf("[WARN] Job %s not found\n", jobID)
 	}
 }
 
@@ -220,8 +220,8 @@ func cronEnableCmd(storePath string, disable bool) {
 		if disable {
 			status = "disabled"
 		}
-		fmt.Printf("鉁?Job '%s' %s\n", job.Name, status)
+		fmt.Printf("[OK] Job '%s' %s\n", job.Name, status)
 	} else {
-		fmt.Printf("鉁?Job %s not found\n", jobID)
+		fmt.Printf("[WARN] Job %s not found\n", jobID)
 	}
 }
