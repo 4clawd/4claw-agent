@@ -181,7 +181,7 @@ func printHelp() {
 	fmt.Println("  onboard     Initialize 4claw configuration and workspace")
 	fmt.Println("  agent       Interact with the agent directly")
 	fmt.Println("  auth        Manage authentication (login, logout, status)")
-	fmt.Println("  gateway     Start 4claw gateway")
+	fmt.Println("  gateway     Start 4claw gateway (supports -c/--config <path>)")
 	fmt.Println("  status      Show 4claw status")
 	fmt.Println("  cron        Manage scheduled tasks")
 	fmt.Println("  migrate     Migrate from OpenClaw to 4claw")

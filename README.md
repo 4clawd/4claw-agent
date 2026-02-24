@@ -39,6 +39,12 @@ make build
 4claw gateway
 ```
 
+6. Start gateway with a custom config path:
+
+```bash
+4claw gateway -c /path/to/config.json
+```
+
 ## Docker compose
 
 ```bash

@@ -29,17 +29,41 @@ import (
 )
 
 func gatewayCmd() {
-	// Check for --debug flag
+	// Parse gateway flags.
 	args := os.Args[2:]
-	for _, arg := range args {
-		if arg == "--debug" || arg == "-d" {
+	configPath := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--debug", "-d":
 			logger.SetLevel(logger.DEBUG)
 			fmt.Println("Debug mode enabled")
-			break
+		case "--config", "-c":
+			if i+1 >= len(args) {
+				fmt.Println("Error: missing value for --config")
+				fmt.Println("Usage: 4claw gateway [-d|--debug] [-c|--config <path>]")
+				os.Exit(1)
+			}
+			configPath = args[i+1]
+			i++
+		case "--help", "-h":
+			fmt.Println("Usage: 4claw gateway [-d|--debug] [-c|--config <path>]")
+			fmt.Println()
+			fmt.Println("Options:")
+			fmt.Println("  -d, --debug          Enable debug logging")
+			fmt.Println("  -c, --config <path>  Load config from a custom path")
+			return
 		}
 	}
 
-	cfg, err := loadConfig()
+	var (
+		cfg *config.Config
+		err error
+	)
+	if configPath != "" {
+		cfg, err = config.LoadConfig(configPath)
+	} else {
+		cfg, err = loadConfig()
+	}
 	if err != nil {
 		fmt.Printf("Error loading config: %v\n", err)
 		os.Exit(1)
