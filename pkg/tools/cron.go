@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sipeed/picoclaw/pkg/bus"
-	"github.com/sipeed/picoclaw/pkg/config"
-	"github.com/sipeed/picoclaw/pkg/cron"
-	"github.com/sipeed/picoclaw/pkg/utils"
+	"github.com/sipeed/4claw/pkg/bus"
+	"github.com/sipeed/4claw/pkg/config"
+	"github.com/sipeed/4claw/pkg/cron"
+	"github.com/sipeed/4claw/pkg/utils"
 )
 
 // JobExecutor is the interface for executing cron jobs through the agent
@@ -51,7 +51,7 @@ func (t *CronTool) Name() string {
 
 // Description returns the tool description
 func (t *CronTool) Description() string {
-	return "Schedule reminders, tasks, or system commands. IMPORTANT: When user asks to be reminded or scheduled, you MUST call this tool. Use 'at_seconds' for one-time reminders (e.g., 'remind me in 10 minutes' → at_seconds=600). Use 'every_seconds' ONLY for recurring tasks (e.g., 'every 2 hours' → every_seconds=7200). Use 'cron_expr' for complex recurring schedules. Use 'command' to execute shell commands directly."
+	return "Schedule reminders, tasks, or system commands. IMPORTANT: When user asks to be reminded or scheduled, you MUST call this tool. Use 'at_seconds' for one-time reminders (e.g., 'remind me in 10 minutes' 鈫?at_seconds=600). Use 'every_seconds' ONLY for recurring tasks (e.g., 'every 2 hours' 鈫?every_seconds=7200). Use 'cron_expr' for complex recurring schedules. Use 'command' to execute shell commands directly."
 }
 
 // Parameters returns the tool parameters schema

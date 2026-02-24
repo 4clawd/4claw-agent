@@ -16,11 +16,11 @@ import (
 	th "github.com/mymmrac/telego/telegohandler"
 	tu "github.com/mymmrac/telego/telegoutil"
 
-	"github.com/sipeed/picoclaw/pkg/bus"
-	"github.com/sipeed/picoclaw/pkg/config"
-	"github.com/sipeed/picoclaw/pkg/logger"
-	"github.com/sipeed/picoclaw/pkg/utils"
-	"github.com/sipeed/picoclaw/pkg/voice"
+	"github.com/sipeed/4claw/pkg/bus"
+	"github.com/sipeed/4claw/pkg/config"
+	"github.com/sipeed/4claw/pkg/logger"
+	"github.com/sipeed/4claw/pkg/utils"
+	"github.com/sipeed/4claw/pkg/voice"
 )
 
 type TelegramChannel struct {
@@ -348,7 +348,7 @@ func (c *TelegramChannel) handleMessage(ctx context.Context, message *telego.Mes
 	_, thinkCancel := context.WithTimeout(ctx, 5*time.Minute)
 	c.stopThinking.Store(chatIDStr, &thinkingCancel{fn: thinkCancel})
 
-	pMsg, err := c.bot.SendMessage(ctx, tu.Message(tu.ID(chatID), "Thinking... 💭"))
+	pMsg, err := c.bot.SendMessage(ctx, tu.Message(tu.ID(chatID), "Thinking... 馃挱"))
 	if err == nil {
 		pID := pMsg.MessageID
 		c.placeholders.Store(chatIDStr, pID)
@@ -454,7 +454,7 @@ func markdownToTelegramHTML(text string) string {
 
 	text = regexp.MustCompile(`~~(.+?)~~`).ReplaceAllString(text, "<s>$1</s>")
 
-	text = regexp.MustCompile(`^[-*]\s+`).ReplaceAllString(text, "• ")
+	text = regexp.MustCompile(`^[-*]\s+`).ReplaceAllString(text, "鈥?")
 
 	for i, code := range inlineCodes.codes {
 		escaped := escapeHTML(code)

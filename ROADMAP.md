@@ -1,21 +1,21 @@
 
-# 🦐 PicoClaw Roadmap
+# 馃 4claw Roadmap
 
 > **Vision**: To build the ultimate lightweight, secure, and fully autonomous AI Agent infrastructure.automate the mundane, unleash your creativity
 
 ---
 
-## 🚀 1. Core Optimization: Extreme Lightweight
+## 馃殌 1. Core Optimization: Extreme Lightweight
 
-*Our defining characteristic. We fight software bloat to ensure PicoClaw runs smoothly on the smallest embedded devices.*
+*Our defining characteristic. We fight software bloat to ensure 4claw runs smoothly on the smallest embedded devices.*
 
-* [**Memory Footprint Reduction**](https://github.com/sipeed/picoclaw/issues/346) 
+* [**Memory Footprint Reduction**](https://github.com/sipeed/4claw/issues/346) 
   * **Goal**: Run smoothly on 64MB RAM embedded boards (e.g., low-end RISC-V SBCs) with the core process consuming < 20MB.
   * **Context**: RAM is expensive and scarce on edge devices. Memory optimization takes precedence over storage size.
   * **Action**: Analyze memory growth between releases, remove redundant dependencies, and optimize data structures.
 
 
-## 🛡️ 2. Security Hardening: Defense in Depth
+## 馃洝锔?2. Security Hardening: Defense in Depth
 
 *Paying off early technical debt. We invite security experts to help build a "Secure-by-Default" agent.*
 
@@ -37,12 +37,12 @@
 
 
 
-## 🔌 3. Connectivity: Protocol-First Architecture
+## 馃攲 3. Connectivity: Protocol-First Architecture
 
 *Connect every model, reach every platform.*
 
 * **Provider**
-  * [**Architecture Upgrade**](https://github.com/sipeed/picoclaw/issues/283): Refactor from "Vendor-based" to "Protocol-based" classification (e.g., OpenAI-compatible, Ollama-compatible). *(Status: In progress by @Daming, ETA 5 days)*
+  * [**Architecture Upgrade**](https://github.com/sipeed/4claw/issues/283): Refactor from "Vendor-based" to "Protocol-based" classification (e.g., OpenAI-compatible, Ollama-compatible). *(Status: In progress by @Daming, ETA 5 days)*
   * **Local Models**: Deep integration with **Ollama**, **vLLM**, **LM Studio**, and **Mistral** (local inference).
   * **Online Models**: Continued support for frontier closed-source models.
 
@@ -50,37 +50,37 @@
 * **Channel**
   * **IM Matrix**: QQ, WeChat (Work), DingTalk, Feishu (Lark), Telegram, Discord, WhatsApp, LINE, Slack, Email, KOOK, Signal, ...
   * **Standards**: Support for the **OneBot** protocol.
-  * [**attachment**](https://github.com/sipeed/picoclaw/issues/348): Native handling of images, audio, and video attachments.
+  * [**attachment**](https://github.com/sipeed/4claw/issues/348): Native handling of images, audio, and video attachments.
 
 
 * **Skill Marketplace**
-  * [**Discovery skills**](https://github.com/sipeed/picoclaw/issues/287): Implement `find_skill` to automatically discover and install skills from the [GitHub Skills Repo] or other registries.
+  * [**Discovery skills**](https://github.com/sipeed/4claw/issues/287): Implement `find_skill` to automatically discover and install skills from the [GitHub Skills Repo] or other registries.
 
 
 
-## 🧠 4. Advanced Capabilities: From Chatbot to Agentic AI
+## 馃 4. Advanced Capabilities: From Chatbot to Agentic AI
 
-*Beyond conversation—focusing on action and collaboration.*
+*Beyond conversation鈥攆ocusing on action and collaboration.*
 
 * **Operations**
-  * [**MCP Support**](https://github.com/sipeed/picoclaw/issues/290): Native support for the **Model Context Protocol (MCP)**.
-  * [**Browser Automation**](https://github.com/sipeed/picoclaw/issues/293): Headless browser control via CDP (Chrome DevTools Protocol) or ActionBook.
-  * [**Mobile Operation**](https://github.com/sipeed/picoclaw/issues/292): Android device control (similar to BotDrop).
+  * [**MCP Support**](https://github.com/sipeed/4claw/issues/290): Native support for the **Model Context Protocol (MCP)**.
+  * [**Browser Automation**](https://github.com/sipeed/4claw/issues/293): Headless browser control via CDP (Chrome DevTools Protocol) or ActionBook.
+  * [**Mobile Operation**](https://github.com/sipeed/4claw/issues/292): Android device control (similar to BotDrop).
 
 
 * **Multi-Agent Collaboration**
-  * [**Basic Multi-Agent**](https://github.com/sipeed/picoclaw/issues/294) implement
-  * [**Model Routing**](https://github.com/sipeed/picoclaw/issues/295): "Smart Routing" — dispatch simple tasks to small/local models (fast/cheap) and complex tasks to SOTA models (smart).
-  * [**Swarm Mode**](https://github.com/sipeed/picoclaw/issues/284): Collaboration between multiple PicoClaw instances on the same network.
-  * [**AIEOS**](https://github.com/sipeed/picoclaw/issues/296): Exploring AI-Native Operating System interaction paradigms.
+  * [**Basic Multi-Agent**](https://github.com/sipeed/4claw/issues/294) implement
+  * [**Model Routing**](https://github.com/sipeed/4claw/issues/295): "Smart Routing" 鈥?dispatch simple tasks to small/local models (fast/cheap) and complex tasks to SOTA models (smart).
+  * [**Swarm Mode**](https://github.com/sipeed/4claw/issues/284): Collaboration between multiple 4claw instances on the same network.
+  * [**AIEOS**](https://github.com/sipeed/4claw/issues/296): Exploring AI-Native Operating System interaction paradigms.
 
 
 
-## 📚 5. Developer Experience (DevEx) & Documentation
+## 馃摎 5. Developer Experience (DevEx) & Documentation
 
 *Lowering the barrier to entry so anyone can deploy in minutes.*
 
-* [**QuickGuide (Zero-Config Start)**](https://github.com/sipeed/picoclaw/issues/350)
+* [**QuickGuide (Zero-Config Start)**](https://github.com/sipeed/4claw/issues/350)
   * Interactive CLI Wizard: If launched without config, automatically detect the environment and guide the user through Token/Network setup step-by-step.
 
 
@@ -91,7 +91,7 @@
 
 
 
-## 🤖 6. Engineering: AI-Powered Open Source
+## 馃 6. Engineering: AI-Powered Open Source
 
 *Born from Vibe Coding, we continue to use AI to accelerate development.*
 
@@ -102,15 +102,15 @@
 
 
 
-## 🎨 7. Brand & Community
+## 馃帹 7. Brand & Community
 
-* [**Logo Design**](https://github.com/sipeed/picoclaw/issues/297): We are looking for a **Mantis Shrimp (Stomatopoda)** logo design!
+* [**Logo Design**](https://github.com/sipeed/4claw/issues/297): We are looking for a **Mantis Shrimp (Stomatopoda)** logo design!
   * *Concept*: Needs to reflect "Small but Mighty" and "Lightning Fast Strikes."
 
 
 
 ---
 
-### 🤝 Call for Contributions
+### 馃 Call for Contributions
 
 We welcome community contributions to any item on this roadmap! Please comment on the relevant Issue or submit a PR. Let's build the best Edge AI Agent together!

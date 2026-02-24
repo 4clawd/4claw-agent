@@ -1,4 +1,4 @@
-// PicoClaw - Ultra-lightweight personal AI agent
+// 4claw - Ultra-lightweight personal AI agent
 // License: MIT
 
 package main
@@ -13,19 +13,19 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sipeed/picoclaw/pkg/agent"
-	"github.com/sipeed/picoclaw/pkg/bus"
-	"github.com/sipeed/picoclaw/pkg/channels"
-	"github.com/sipeed/picoclaw/pkg/config"
-	"github.com/sipeed/picoclaw/pkg/cron"
-	"github.com/sipeed/picoclaw/pkg/devices"
-	"github.com/sipeed/picoclaw/pkg/health"
-	"github.com/sipeed/picoclaw/pkg/heartbeat"
-	"github.com/sipeed/picoclaw/pkg/logger"
-	"github.com/sipeed/picoclaw/pkg/providers"
-	"github.com/sipeed/picoclaw/pkg/state"
-	"github.com/sipeed/picoclaw/pkg/tools"
-	"github.com/sipeed/picoclaw/pkg/voice"
+	"github.com/sipeed/4claw/pkg/agent"
+	"github.com/sipeed/4claw/pkg/bus"
+	"github.com/sipeed/4claw/pkg/channels"
+	"github.com/sipeed/4claw/pkg/config"
+	"github.com/sipeed/4claw/pkg/cron"
+	"github.com/sipeed/4claw/pkg/devices"
+	"github.com/sipeed/4claw/pkg/health"
+	"github.com/sipeed/4claw/pkg/heartbeat"
+	"github.com/sipeed/4claw/pkg/logger"
+	"github.com/sipeed/4claw/pkg/providers"
+	"github.com/sipeed/4claw/pkg/state"
+	"github.com/sipeed/4claw/pkg/tools"
+	"github.com/sipeed/4claw/pkg/voice"
 )
 
 func gatewayCmd() {
@@ -34,7 +34,7 @@ func gatewayCmd() {
 	for _, arg := range args {
 		if arg == "--debug" || arg == "-d" {
 			logger.SetLevel(logger.DEBUG)
-			fmt.Println("🔍 Debug mode enabled")
+			fmt.Println("馃攳 Debug mode enabled")
 			break
 		}
 	}
@@ -59,12 +59,12 @@ func gatewayCmd() {
 	agentLoop := agent.NewAgentLoop(cfg, msgBus, provider)
 
 	// Print agent startup info
-	fmt.Println("\n📦 Agent Status:")
+	fmt.Println("\n馃摝 Agent Status:")
 	startupInfo := agentLoop.GetStartupInfo()
 	toolsInfo := startupInfo["tools"].(map[string]any)
 	skillsInfo := startupInfo["skills"].(map[string]any)
-	fmt.Printf("  • Tools: %d loaded\n", toolsInfo["count"])
-	fmt.Printf("  • Skills: %d/%d available\n",
+	fmt.Printf("  鈥?Tools: %d loaded\n", toolsInfo["count"])
+	fmt.Printf("  鈥?Skills: %d/%d available\n",
 		skillsInfo["available"],
 		skillsInfo["total"])
 
@@ -159,12 +159,12 @@ func gatewayCmd() {
 
 	enabledChannels := channelManager.GetEnabledChannels()
 	if len(enabledChannels) > 0 {
-		fmt.Printf("✓ Channels enabled: %s\n", enabledChannels)
+		fmt.Printf("鉁?Channels enabled: %s\n", enabledChannels)
 	} else {
-		fmt.Println("⚠ Warning: No channels enabled")
+		fmt.Println("鈿?Warning: No channels enabled")
 	}
 
-	fmt.Printf("✓ Gateway started on %s:%d\n", cfg.Gateway.Host, cfg.Gateway.Port)
+	fmt.Printf("鉁?Gateway started on %s:%d\n", cfg.Gateway.Host, cfg.Gateway.Port)
 	fmt.Println("Press Ctrl+C to stop")
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -173,12 +173,12 @@ func gatewayCmd() {
 	if err := cronService.Start(); err != nil {
 		fmt.Printf("Error starting cron service: %v\n", err)
 	}
-	fmt.Println("✓ Cron service started")
+	fmt.Println("鉁?Cron service started")
 
 	if err := heartbeatService.Start(); err != nil {
 		fmt.Printf("Error starting heartbeat service: %v\n", err)
 	}
-	fmt.Println("✓ Heartbeat service started")
+	fmt.Println("鉁?Heartbeat service started")
 
 	stateManager := state.NewManager(cfg.WorkspacePath())
 	deviceService := devices.NewService(devices.Config{
@@ -189,7 +189,7 @@ func gatewayCmd() {
 	if err := deviceService.Start(ctx); err != nil {
 		fmt.Printf("Error starting device service: %v\n", err)
 	} else if cfg.Devices.Enabled {
-		fmt.Println("✓ Device event service started")
+		fmt.Println("鉁?Device event service started")
 	}
 
 	if err := channelManager.StartAll(ctx); err != nil {
@@ -202,7 +202,7 @@ func gatewayCmd() {
 			logger.ErrorCF("health", "Health server error", map[string]any{"error": err.Error()})
 		}
 	}()
-	fmt.Printf("✓ Health endpoints available at http://%s:%d/health and /ready\n", cfg.Gateway.Host, cfg.Gateway.Port)
+	fmt.Printf("鉁?Health endpoints available at http://%s:%d/health and /ready\n", cfg.Gateway.Host, cfg.Gateway.Port)
 
 	go agentLoop.Run(ctx)
 
@@ -218,7 +218,7 @@ func gatewayCmd() {
 	cronService.Stop()
 	agentLoop.Stop()
 	channelManager.StopAll(ctx)
-	fmt.Println("✓ Gateway stopped")
+	fmt.Println("鉁?Gateway stopped")
 }
 
 func setupCronTool(

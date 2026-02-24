@@ -7,9 +7,9 @@ import (
 	"net"
 	"sync"
 
-	"github.com/sipeed/picoclaw/pkg/bus"
-	"github.com/sipeed/picoclaw/pkg/config"
-	"github.com/sipeed/picoclaw/pkg/logger"
+	"github.com/sipeed/4claw/pkg/bus"
+	"github.com/sipeed/4claw/pkg/config"
+	"github.com/sipeed/4claw/pkg/logger"
 )
 
 type MaixCamChannel struct {
@@ -159,7 +159,7 @@ func (c *MaixCamChannel) handlePersonDetection(msg MaixCamMessage) {
 	w, _ := msg.Data["w"].(float64)
 	h, _ := msg.Data["h"].(float64)
 
-	content := fmt.Sprintf("📷 Person detected!\nClass: %s\nConfidence: %.2f%%\nPosition: (%.0f, %.0f)\nSize: %.0fx%.0f",
+	content := fmt.Sprintf("馃摲 Person detected!\nClass: %s\nConfidence: %.2f%%\nPosition: (%.0f, %.0f)\nSize: %.0fx%.0f",
 		classInfo, score*100, x, y, w, h)
 
 	metadata := map[string]string{

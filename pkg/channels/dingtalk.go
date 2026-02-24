@@ -1,4 +1,4 @@
-// PicoClaw - Ultra-lightweight personal AI agent
+// 4claw - Ultra-lightweight personal AI agent
 // DingTalk channel implementation using Stream Mode
 
 package channels
@@ -11,13 +11,13 @@ import (
 	"github.com/open-dingtalk/dingtalk-stream-sdk-go/chatbot"
 	"github.com/open-dingtalk/dingtalk-stream-sdk-go/client"
 
-	"github.com/sipeed/picoclaw/pkg/bus"
-	"github.com/sipeed/picoclaw/pkg/config"
-	"github.com/sipeed/picoclaw/pkg/logger"
-	"github.com/sipeed/picoclaw/pkg/utils"
+	"github.com/sipeed/4claw/pkg/bus"
+	"github.com/sipeed/4claw/pkg/config"
+	"github.com/sipeed/4claw/pkg/logger"
+	"github.com/sipeed/4claw/pkg/utils"
 )
 
-// DingTalkChannel implements the Channel interface for DingTalk (钉钉)
+// DingTalkChannel implements the Channel interface for DingTalk (閽夐拤)
 // It uses WebSocket for receiving messages via stream mode and API for sending
 type DingTalkChannel struct {
 	*BaseChannel
@@ -187,7 +187,7 @@ func (c *DingTalkChannel) SendDirectReply(ctx context.Context, sessionWebhook, c
 
 	// Convert string content to []byte for the API
 	contentBytes := []byte(content)
-	titleBytes := []byte("PicoClaw")
+	titleBytes := []byte("4claw")
 
 	// Send markdown formatted reply
 	err := replier.SimpleReplyMarkdown(

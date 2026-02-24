@@ -1,50 +1,50 @@
-# 企业微信自建应用 (WeCom App) 配置指南
+# 浼佷笟寰俊鑷缓搴旂敤 (WeCom App) 閰嶇疆鎸囧崡
 
-本文档介绍如何在 PicoClaw 中配置企业微信自建应用 (wecom-app) 通道。
+鏈枃妗ｄ粙缁嶅浣曞湪 4claw 涓厤缃紒涓氬井淇¤嚜寤哄簲鐢?(wecom-app) 閫氶亾銆?
 
-## 功能特性
+## 鍔熻兘鐗规€?
 
-| 功能 | 支持状态 |
+| 鍔熻兘 | 鏀寔鐘舵€?|
 |------|---------|
-| 被动接收消息 | ✅ |
-| 主动发送消息 | ✅ |
-| 私聊 | ✅ |
-| 群聊 | ❌ |
+| 琚姩鎺ユ敹娑堟伅 | 鉁?|
+| 涓诲姩鍙戦€佹秷鎭?| 鉁?|
+| 绉佽亰 | 鉁?|
+| 缇よ亰 | 鉂?|
 
-## 配置步骤
+## 閰嶇疆姝ラ
 
-### 1. 企业微信后台配置
+### 1. 浼佷笟寰俊鍚庡彴閰嶇疆
 
-1. 登录 [企业微信管理后台](https://work.weixin.qq.com/wework_admin)
-2. 进入"应用管理" → 选择自建应用
-3. 记录以下信息：
-   - **AgentId**: 应用详情页显示
-   - **Secret**: 点击"查看"获取
-4. 进入"我的企业"页面，记录 **企业ID** (CorpID)
+1. 鐧诲綍 [浼佷笟寰俊绠＄悊鍚庡彴](https://work.weixin.qq.com/wework_admin)
+2. 杩涘叆"搴旂敤绠＄悊" 鈫?閫夋嫨鑷缓搴旂敤
+3. 璁板綍浠ヤ笅淇℃伅锛?
+   - **AgentId**: 搴旂敤璇︽儏椤垫樉绀?
+   - **Secret**: 鐐瑰嚮"鏌ョ湅"鑾峰彇
+4. 杩涘叆"鎴戠殑浼佷笟"椤甸潰锛岃褰?**浼佷笟ID** (CorpID)
 
-### 2. 接收消息配置
+### 2. 鎺ユ敹娑堟伅閰嶇疆
 
-1. 在应用详情页，点击"接收消息"的"设置API接收"
-2. 填写以下信息：
+1. 鍦ㄥ簲鐢ㄨ鎯呴〉锛岀偣鍑?鎺ユ敹娑堟伅"鐨?璁剧疆API鎺ユ敹"
+2. 濉啓浠ヤ笅淇℃伅锛?
    - **URL**: `http://your-server:18792/webhook/wecom-app`
-   - **Token**: 随机生成或自定义（用于签名验证）
-   - **EncodingAESKey**: 点击"随机生成"生成43字符的密钥
-3. 点击"保存"时，企业微信会发送验证请求
+   - **Token**: 闅忔満鐢熸垚鎴栬嚜瀹氫箟锛堢敤浜庣鍚嶉獙璇侊級
+   - **EncodingAESKey**: 鐐瑰嚮"闅忔満鐢熸垚"鐢熸垚43瀛楃鐨勫瘑閽?
+3. 鐐瑰嚮"淇濆瓨"鏃讹紝浼佷笟寰俊浼氬彂閫侀獙璇佽姹?
 
-### 3. PicoClaw 配置
+### 3. 4claw 閰嶇疆
 
-在 `config.json` 中添加以下配置：
+鍦?`config.json` 涓坊鍔犱互涓嬮厤缃細
 
 ```json
 {
   "channels": {
     "wecom_app": {
       "enabled": true,
-      "corp_id": "wwxxxxxxxxxxxxxxxx",           // 企业ID
-      "corp_secret": "xxxxxxxxxxxxxxxxxxxxxxxx", // 应用Secret
-      "agent_id": 1000002,                        // 应用AgentId
-      "token": "your_token",                      // 接收消息配置的Token
-      "encoding_aes_key": "your_encoding_aes_key", // 接收消息配置的EncodingAESKey
+      "corp_id": "wwxxxxxxxxxxxxxxxx",           // 浼佷笟ID
+      "corp_secret": "xxxxxxxxxxxxxxxxxxxxxxxx", // 搴旂敤Secret
+      "agent_id": 1000002,                        // 搴旂敤AgentId
+      "token": "your_token",                      // 鎺ユ敹娑堟伅閰嶇疆鐨凾oken
+      "encoding_aes_key": "your_encoding_aes_key", // 鎺ユ敹娑堟伅閰嶇疆鐨凟ncodingAESKey
       "webhook_host": "0.0.0.0",
       "webhook_port": 18792,
       "webhook_path": "/webhook/wecom-app",
@@ -55,63 +55,63 @@
 }
 ```
 
-## 常见问题
+## 甯歌闂
 
-### 1. 回调URL验证失败
+### 1. 鍥炶皟URL楠岃瘉澶辫触
 
-**症状**: 企业微信保存API接收消息时提示验证失败
+**鐥囩姸**: 浼佷笟寰俊淇濆瓨API鎺ユ敹娑堟伅鏃舵彁绀洪獙璇佸け璐?
 
-**检查项**:
-- 确认服务器防火墙已开放 18792 端口
-- 确认 `corp_id`、`token`、`encoding_aes_key` 配置正确
-- 查看 PicoClaw 日志是否有请求到达
+**妫€鏌ラ」**:
+- 纭鏈嶅姟鍣ㄩ槻鐏宸插紑鏀?18792 绔彛
+- 纭 `corp_id`銆乣token`銆乣encoding_aes_key` 閰嶇疆姝ｇ‘
+- 鏌ョ湅 4claw 鏃ュ織鏄惁鏈夎姹傚埌杈?
 
-### 2. 中文消息解密失败
+### 2. 涓枃娑堟伅瑙ｅ瘑澶辫触
 
-**症状**: 发送中文消息时出现 `invalid padding size` 错误
+**鐥囩姸**: 鍙戦€佷腑鏂囨秷鎭椂鍑虹幇 `invalid padding size` 閿欒
 
-**原因**: 企业微信使用非标准的 PKCS7 填充（32字节块大小）
+**鍘熷洜**: 浼佷笟寰俊浣跨敤闈炴爣鍑嗙殑 PKCS7 濉厖锛?2瀛楄妭鍧楀ぇ灏忥級
 
-**解决**: 确保使用最新版本的 PicoClaw，已修复此问题。
+**瑙ｅ喅**: 纭繚浣跨敤鏈€鏂扮増鏈殑 4claw锛屽凡淇姝ら棶棰樸€?
 
-### 3. 端口冲突
+### 3. 绔彛鍐茬獊
 
-**症状**: 启动时提示端口已被占用
+**鐥囩姸**: 鍚姩鏃舵彁绀虹鍙ｅ凡琚崰鐢?
 
-**解决**: 修改 `webhook_port` 为其他端口，如 18794
+**瑙ｅ喅**: 淇敼 `webhook_port` 涓哄叾浠栫鍙ｏ紝濡?18794
 
-## 技术细节
+## 鎶€鏈粏鑺?
 
-### 加密算法
+### 鍔犲瘑绠楁硶
 
-- **算法**: AES-256-CBC
-- **密钥**: EncodingAESKey Base64解码后的32字节
-- **IV**: AESKey的前16字节
-- **填充**: PKCS7（块大小为32字节，非标准16字节）
-- **消息格式**: XML
+- **绠楁硶**: AES-256-CBC
+- **瀵嗛挜**: EncodingAESKey Base64瑙ｇ爜鍚庣殑32瀛楄妭
+- **IV**: AESKey鐨勫墠16瀛楄妭
+- **濉厖**: PKCS7锛堝潡澶у皬涓?2瀛楄妭锛岄潪鏍囧噯16瀛楄妭锛?
+- **娑堟伅鏍煎紡**: XML
 
-### 消息结构
+### 娑堟伅缁撴瀯
 
-解密后的消息格式：
+瑙ｅ瘑鍚庣殑娑堟伅鏍煎紡锛?
 ```
 random(16B) + msg_len(4B) + msg + receiveid
 ```
 
-其中 `receiveid` 对于自建应用是 `corp_id`。
+鍏朵腑 `receiveid` 瀵逛簬鑷缓搴旂敤鏄?`corp_id`銆?
 
-## 调试
+## 璋冭瘯
 
-启用调试模式查看详细日志：
+鍚敤璋冭瘯妯″紡鏌ョ湅璇︾粏鏃ュ織锛?
 
 ```bash
-picoclaw gateway --debug
+4claw gateway --debug
 ```
 
-关键日志标识：
-- `wecom_app`: WeCom App 通道相关日志
-- `wecom_common`: 加密解密相关日志
+鍏抽敭鏃ュ織鏍囪瘑锛?
+- `wecom_app`: WeCom App 閫氶亾鐩稿叧鏃ュ織
+- `wecom_common`: 鍔犲瘑瑙ｅ瘑鐩稿叧鏃ュ織
 
-## 参考文档
+## 鍙傝€冩枃妗?
 
-- [企业微信官方文档 - 接收消息](https://developer.work.weixin.qq.com/document/path/96211)
-- [企业微信官方加解密库](https://github.com/sbzhu/weworkapi_golang)
+- [浼佷笟寰俊瀹樻柟鏂囨。 - 鎺ユ敹娑堟伅](https://developer.work.weixin.qq.com/document/path/96211)
+- [浼佷笟寰俊瀹樻柟鍔犺В瀵嗗簱](https://github.com/sbzhu/weworkapi_golang)

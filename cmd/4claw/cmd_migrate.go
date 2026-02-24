@@ -1,4 +1,4 @@
-// PicoClaw - Ultra-lightweight personal AI agent
+// 4claw - Ultra-lightweight personal AI agent
 // License: MIT
 
 package main
@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sipeed/picoclaw/pkg/migrate"
+	"github.com/sipeed/4claw/pkg/migrate"
 )
 
 func migrateCmd() {
@@ -36,9 +36,9 @@ func migrateCmd() {
 				opts.OpenClawHome = args[i+1]
 				i++
 			}
-		case "--picoclaw-home":
+		case "--4claw-home":
 			if i+1 < len(args) {
-				opts.PicoClawHome = args[i+1]
+				opts.FourClawHome = args[i+1]
 				i++
 			}
 		default:
@@ -60,9 +60,9 @@ func migrateCmd() {
 }
 
 func migrateHelp() {
-	fmt.Println("\nMigrate from OpenClaw to PicoClaw")
+	fmt.Println("\nMigrate from OpenClaw to 4claw")
 	fmt.Println()
-	fmt.Println("Usage: picoclaw migrate [options]")
+	fmt.Println("Usage: 4claw migrate [options]")
 	fmt.Println()
 	fmt.Println("Options:")
 	fmt.Println("  --dry-run          Show what would be migrated without making changes")
@@ -71,11 +71,11 @@ func migrateHelp() {
 	fmt.Println("  --workspace-only   Only migrate workspace files, skip config")
 	fmt.Println("  --force            Skip confirmation prompts")
 	fmt.Println("  --openclaw-home    Override OpenClaw home directory (default: ~/.openclaw)")
-	fmt.Println("  --picoclaw-home    Override PicoClaw home directory (default: ~/.picoclaw)")
+	fmt.Println("  --4claw-home    Override 4claw home directory (default: ~/.4claw)")
 	fmt.Println()
 	fmt.Println("Examples:")
-	fmt.Println("  picoclaw migrate              Detect and migrate from OpenClaw")
-	fmt.Println("  picoclaw migrate --dry-run    Show what would be migrated")
-	fmt.Println("  picoclaw migrate --refresh    Re-sync workspace files")
-	fmt.Println("  picoclaw migrate --force      Migrate without confirmation")
+	fmt.Println("  4claw migrate              Detect and migrate from OpenClaw")
+	fmt.Println("  4claw migrate --dry-run    Show what would be migrated")
+	fmt.Println("  4claw migrate --refresh    Re-sync workspace files")
+	fmt.Println("  4claw migrate --force      Migrate without confirmation")
 }

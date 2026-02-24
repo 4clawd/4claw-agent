@@ -1,4 +1,4 @@
-// PicoClaw - Ultra-lightweight personal AI agent
+// 4claw - Ultra-lightweight personal AI agent
 // License: MIT
 
 package main
@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sipeed/picoclaw/pkg/auth"
-	"github.com/sipeed/picoclaw/pkg/config"
-	"github.com/sipeed/picoclaw/pkg/providers"
+	"github.com/sipeed/4claw/pkg/auth"
+	"github.com/sipeed/4claw/pkg/config"
+	"github.com/sipeed/4claw/pkg/providers"
 )
 
 const supportedProvidersMsg = "Supported providers: openai, anthropic, google-antigravity"
@@ -52,13 +52,13 @@ func authHelp() {
 	fmt.Println("  --device-code        Use device code flow (for headless environments)")
 	fmt.Println()
 	fmt.Println("Examples:")
-	fmt.Println("  picoclaw auth login --provider openai")
-	fmt.Println("  picoclaw auth login --provider openai --device-code")
-	fmt.Println("  picoclaw auth login --provider anthropic")
-	fmt.Println("  picoclaw auth login --provider google-antigravity")
-	fmt.Println("  picoclaw auth models")
-	fmt.Println("  picoclaw auth logout --provider openai")
-	fmt.Println("  picoclaw auth status")
+	fmt.Println("  4claw auth login --provider openai")
+	fmt.Println("  4claw auth login --provider openai --device-code")
+	fmt.Println("  4claw auth login --provider anthropic")
+	fmt.Println("  4claw auth login --provider google-antigravity")
+	fmt.Println("  4claw auth models")
+	fmt.Println("  4claw auth logout --provider openai")
+	fmt.Println("  4claw auth status")
 }
 
 func authLoginCmd() {
@@ -225,9 +225,9 @@ func authLoginGoogleAntigravity() {
 		}
 	}
 
-	fmt.Println("\n✓ Google Antigravity login successful!")
+	fmt.Println("\n鉁?Google Antigravity login successful!")
 	fmt.Println("Default model set to: gemini-flash")
-	fmt.Println("Try it: picoclaw agent -m \"Hello world\"")
+	fmt.Println("Try it: 4claw agent -m \"Hello world\"")
 }
 
 func fetchGoogleUserEmail(accessToken string) (string, error) {
@@ -407,7 +407,7 @@ func authStatusCmd() {
 
 	if len(store.Credentials) == 0 {
 		fmt.Println("No authenticated providers.")
-		fmt.Println("Run: picoclaw auth login --provider <name>")
+		fmt.Println("Run: 4claw auth login --provider <name>")
 		return
 	}
 
@@ -443,7 +443,7 @@ func authModelsCmd() {
 	cred, err := auth.GetCredential("google-antigravity")
 	if err != nil || cred == nil {
 		fmt.Println("Not logged in to Google Antigravity.")
-		fmt.Println("Run: picoclaw auth login --provider google-antigravity")
+		fmt.Println("Run: 4claw auth login --provider google-antigravity")
 		return
 	}
 
@@ -479,9 +479,9 @@ func authModelsCmd() {
 	fmt.Println("Available Antigravity Models:")
 	fmt.Println("-----------------------------")
 	for _, m := range models {
-		status := "✓"
+		status := "鉁?
 		if m.IsExhausted {
-			status = "✗ (quota exhausted)"
+			status = "鉁?(quota exhausted)"
 		}
 		name := m.ID
 		if m.DisplayName != "" {

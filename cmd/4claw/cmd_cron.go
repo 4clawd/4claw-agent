@@ -1,4 +1,4 @@
-// PicoClaw - Ultra-lightweight personal AI agent
+// 4claw - Ultra-lightweight personal AI agent
 // License: MIT
 
 package main
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/sipeed/picoclaw/pkg/cron"
+	"github.com/sipeed/4claw/pkg/cron"
 )
 
 func cronCmd() {
@@ -36,7 +36,7 @@ func cronCmd() {
 		cronAddCmd(cronStorePath)
 	case "remove":
 		if len(os.Args) < 4 {
-			fmt.Println("Usage: picoclaw cron remove <job_id>")
+			fmt.Println("Usage: 4claw cron remove <job_id>")
 			return
 		}
 		cronRemoveCmd(cronStorePath, os.Args[3])
@@ -192,21 +192,21 @@ func cronAddCmd(storePath string) {
 		return
 	}
 
-	fmt.Printf("✓ Added job '%s' (%s)\n", job.Name, job.ID)
+	fmt.Printf("鉁?Added job '%s' (%s)\n", job.Name, job.ID)
 }
 
 func cronRemoveCmd(storePath, jobID string) {
 	cs := cron.NewCronService(storePath, nil)
 	if cs.RemoveJob(jobID) {
-		fmt.Printf("✓ Removed job %s\n", jobID)
+		fmt.Printf("鉁?Removed job %s\n", jobID)
 	} else {
-		fmt.Printf("✗ Job %s not found\n", jobID)
+		fmt.Printf("鉁?Job %s not found\n", jobID)
 	}
 }
 
 func cronEnableCmd(storePath string, disable bool) {
 	if len(os.Args) < 4 {
-		fmt.Println("Usage: picoclaw cron enable/disable <job_id>")
+		fmt.Println("Usage: 4claw cron enable/disable <job_id>")
 		return
 	}
 
@@ -220,8 +220,8 @@ func cronEnableCmd(storePath string, disable bool) {
 		if disable {
 			status = "disabled"
 		}
-		fmt.Printf("✓ Job '%s' %s\n", job.Name, status)
+		fmt.Printf("鉁?Job '%s' %s\n", job.Name, status)
 	} else {
-		fmt.Printf("✗ Job %s not found\n", jobID)
+		fmt.Printf("鉁?Job %s not found\n", jobID)
 	}
 }

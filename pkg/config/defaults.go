@@ -1,16 +1,16 @@
-// PicoClaw - Ultra-lightweight personal AI agent
+// 4claw - Ultra-lightweight personal AI agent
 // License: MIT
 //
-// Copyright (c) 2026 PicoClaw contributors
+// Copyright (c) 2026 4claw contributors
 
 package config
 
-// DefaultConfig returns the default configuration for PicoClaw.
+// DefaultConfig returns the default configuration for 4claw.
 func DefaultConfig() *Config {
 	return &Config{
 		Agents: AgentsConfig{
 			Defaults: AgentDefaults{
-				Workspace:           "~/.picoclaw/workspace",
+				Workspace:           "~/.4claw/workspace",
 				RestrictToWorkspace: true,
 				Provider:            "",
 				Model:               "glm-4.7",
@@ -122,7 +122,7 @@ func DefaultConfig() *Config {
 			// Add your API key to the model you want to use
 			// ============================================
 
-			// Zhipu AI (智谱) - https://open.bigmodel.cn/usercenter/apikeys
+			// Zhipu AI (鏅鸿氨) - https://open.bigmodel.cn/usercenter/apikeys
 			{
 				ModelName: "glm-4.7",
 				Model:     "zhipu/glm-4.7",
@@ -162,7 +162,7 @@ func DefaultConfig() *Config {
 				APIKey:    "",
 			},
 
-			// Qwen (通义千问) - https://dashscope.console.aliyun.com/apiKey
+			// Qwen (閫氫箟鍗冮棶) - https://dashscope.console.aliyun.com/apiKey
 			{
 				ModelName: "qwen-plus",
 				Model:     "qwen/qwen-plus",
@@ -170,7 +170,7 @@ func DefaultConfig() *Config {
 				APIKey:    "",
 			},
 
-			// Moonshot (月之暗面) - https://platform.moonshot.cn/console/api-keys
+			// Moonshot (鏈堜箣鏆楅潰) - https://platform.moonshot.cn/console/api-keys
 			{
 				ModelName: "moonshot-v1-8k",
 				Model:     "moonshot/moonshot-v1-8k",
@@ -216,7 +216,7 @@ func DefaultConfig() *Config {
 				APIKey:    "",
 			},
 
-			// Volcengine (火山引擎) - https://console.volcengine.com/ark
+			// Volcengine (鐏北寮曟搸) - https://console.volcengine.com/ark
 			{
 				ModelName: "doubao-pro",
 				Model:     "volcengine/doubao-pro-32k",
@@ -224,7 +224,7 @@ func DefaultConfig() *Config {
 				APIKey:    "",
 			},
 
-			// ShengsuanYun (神算云)
+			// ShengsuanYun (绁炵畻浜?
 			{
 				ModelName: "deepseek-v3",
 				Model:     "shengsuanyun/deepseek-v3",

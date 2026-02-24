@@ -1,4 +1,4 @@
-// PicoClaw - Ultra-lightweight personal AI agent
+// 4claw - Ultra-lightweight personal AI agent
 // License: MIT
 
 package main
@@ -14,10 +14,10 @@ import (
 
 	"github.com/chzyer/readline"
 
-	"github.com/sipeed/picoclaw/pkg/agent"
-	"github.com/sipeed/picoclaw/pkg/bus"
-	"github.com/sipeed/picoclaw/pkg/logger"
-	"github.com/sipeed/picoclaw/pkg/providers"
+	"github.com/sipeed/4claw/pkg/agent"
+	"github.com/sipeed/4claw/pkg/bus"
+	"github.com/sipeed/4claw/pkg/logger"
+	"github.com/sipeed/4claw/pkg/providers"
 )
 
 func agentCmd() {
@@ -30,7 +30,7 @@ func agentCmd() {
 		switch args[i] {
 		case "--debug", "-d":
 			logger.SetLevel(logger.DEBUG)
-			fmt.Println("🔍 Debug mode enabled")
+			fmt.Println("馃攳 Debug mode enabled")
 		case "-m", "--message":
 			if i+1 < len(args) {
 				message = args[i+1]
@@ -100,7 +100,7 @@ func interactiveMode(agentLoop *agent.AgentLoop, sessionKey string) {
 
 	rl, err := readline.NewEx(&readline.Config{
 		Prompt:          prompt,
-		HistoryFile:     filepath.Join(os.TempDir(), ".picoclaw_history"),
+		HistoryFile:     filepath.Join(os.TempDir(), ".4claw_history"),
 		HistoryLimit:    100,
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",

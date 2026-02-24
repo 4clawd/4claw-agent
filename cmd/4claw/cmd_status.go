@@ -1,4 +1,4 @@
-// PicoClaw - Ultra-lightweight personal AI agent
+// 4claw - Ultra-lightweight personal AI agent
 // License: MIT
 
 package main
@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sipeed/picoclaw/pkg/auth"
+	"github.com/sipeed/4claw/pkg/auth"
 )
 
 func statusCmd() {
@@ -19,7 +19,7 @@ func statusCmd() {
 
 	configPath := getConfigPath()
 
-	fmt.Printf("%s picoclaw Status\n", logo)
+	fmt.Printf("%s 4claw Status\n", logo)
 	fmt.Printf("Version: %s\n", formatVersion())
 	build, _ := formatBuildInfo()
 	if build != "" {
@@ -28,16 +28,16 @@ func statusCmd() {
 	fmt.Println()
 
 	if _, err := os.Stat(configPath); err == nil {
-		fmt.Println("Config:", configPath, "✓")
+		fmt.Println("Config:", configPath, "鉁?)
 	} else {
-		fmt.Println("Config:", configPath, "✗")
+		fmt.Println("Config:", configPath, "鉁?)
 	}
 
 	workspace := cfg.WorkspacePath()
 	if _, err := os.Stat(workspace); err == nil {
-		fmt.Println("Workspace:", workspace, "✓")
+		fmt.Println("Workspace:", workspace, "鉁?)
 	} else {
-		fmt.Println("Workspace:", workspace, "✗")
+		fmt.Println("Workspace:", workspace, "鉁?)
 	}
 
 	if _, err := os.Stat(configPath); err == nil {
@@ -59,7 +59,7 @@ func statusCmd() {
 
 		status := func(enabled bool) string {
 			if enabled {
-				return "✓"
+				return "鉁?
 			}
 			return "not set"
 		}
@@ -75,12 +75,12 @@ func statusCmd() {
 		fmt.Println("VolcEngine API:", status(hasVolcEngine))
 		fmt.Println("Nvidia API:", status(hasNvidia))
 		if hasVLLM {
-			fmt.Printf("vLLM/Local: ✓ %s\n", cfg.Providers.VLLM.APIBase)
+			fmt.Printf("vLLM/Local: 鉁?%s\n", cfg.Providers.VLLM.APIBase)
 		} else {
 			fmt.Println("vLLM/Local: not set")
 		}
 		if hasOllama {
-			fmt.Printf("Ollama: ✓ %s\n", cfg.Providers.Ollama.APIBase)
+			fmt.Printf("Ollama: 鉁?%s\n", cfg.Providers.Ollama.APIBase)
 		} else {
 			fmt.Println("Ollama: not set")
 		}
