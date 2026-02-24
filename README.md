@@ -33,6 +33,12 @@ make build
 4claw agent -m "Hello"
 ```
 
+Use a custom config path with one-shot mode:
+
+```bash
+4claw agent -c /path/to/config.json -m "Hello"
+```
+
 5. Start gateway mode:
 
 ```bash

@@ -55,15 +55,7 @@ func gatewayCmd() {
 		}
 	}
 
-	var (
-		cfg *config.Config
-		err error
-	)
-	if configPath != "" {
-		cfg, err = config.LoadConfig(configPath)
-	} else {
-		cfg, err = loadConfig()
-	}
+	cfg, err := loadConfigFromPath(configPath)
 	if err != nil {
 		fmt.Printf("Error loading config: %v\n", err)
 		os.Exit(1)

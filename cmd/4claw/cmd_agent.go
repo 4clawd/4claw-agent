@@ -24,6 +24,7 @@ func agentCmd() {
 	message := ""
 	sessionKey := "cli:default"
 	modelOverride := ""
+	configPath := ""
 
 	args := os.Args[2:]
 	for i := 0; i < len(args); i++ {
@@ -41,6 +42,15 @@ func agentCmd() {
 				sessionKey = args[i+1]
 				i++
 			}
+		case "-c", "--config":
+			if i+1 < len(args) {
+				configPath = args[i+1]
+				i++
+			} else {
+				fmt.Println("Error: missing value for --config")
+				fmt.Println("Usage: 4claw agent [-c|--config <path>] [-m|--message <text>] [-s|--session <id>] [--model <name>] [-d|--debug]")
+				os.Exit(1)
+			}
 		case "--model", "-model":
 			if i+1 < len(args) {
 				modelOverride = args[i+1]
@@ -49,7 +59,7 @@ func agentCmd() {
 		}
 	}
 
-	cfg, err := loadConfig()
+	cfg, err := loadConfigFromPath(configPath)
 	if err != nil {
 		fmt.Printf("Error loading config: %v\n", err)
 		os.Exit(1)

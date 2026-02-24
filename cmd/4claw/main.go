@@ -179,7 +179,7 @@ func printHelp() {
 	fmt.Println()
 	fmt.Println("Commands:")
 	fmt.Println("  onboard     Initialize 4claw configuration and workspace")
-	fmt.Println("  agent       Interact with the agent directly")
+	fmt.Println("  agent       Interact with the agent directly (supports -c/--config <path>)")
 	fmt.Println("  auth        Manage authentication (login, logout, status)")
 	fmt.Println("  gateway     Start 4claw gateway (supports -c/--config <path>)")
 	fmt.Println("  status      Show 4claw status")
@@ -196,4 +196,11 @@ func getConfigPath() string {
 
 func loadConfig() (*config.Config, error) {
 	return config.LoadConfig(getConfigPath())
+}
+
+func loadConfigFromPath(path string) (*config.Config, error) {
+	if path == "" {
+		return loadConfig()
+	}
+	return config.LoadConfig(path)
 }
