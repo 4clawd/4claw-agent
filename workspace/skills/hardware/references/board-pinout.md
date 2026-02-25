@@ -6,7 +6,7 @@
 
 | Bus | Pins | Notes |
 |-----|------|-------|
-| I2C-1 | P18 (SCL), P21 (SDA) | **Shared with WiFi SDIO** 鈥?must stop WiFi first |
+| I2C-1 | P18 (SCL), P21 (SDA) | **Shared with WiFi SDIO** 閳?must stop WiFi first |
 | I2C-3 | Available on header | Check device tree for pin assignment |
 | I2C-5 | Software (BitBang) | Slower but no pin conflicts |
 
@@ -14,7 +14,7 @@
 
 | Bus | Pins | Notes |
 |-----|------|-------|
-| SPI-2 | P18 (CS), P21 (MISO), P22 (MOSI), P23 (SCK) | **Shared with WiFi** 鈥?must stop WiFi first |
+| SPI-2 | P18 (CS), P21 (MISO), P22 (MOSI), P23 (SCK) | **Shared with WiFi** 閳?must stop WiFi first |
 | SPI-4 | Software (BitBang) | Slower but no pin conflicts |
 
 ### Setup Steps for I2C-1
@@ -24,8 +24,8 @@
 /etc/init.d/S30wifi stop
 
 # 2. Configure pinmux for I2C-1
-devmem 0x030010D0 b 0x2   # P18 鈫?I2C1_SCL
-devmem 0x030010DC b 0x2   # P21 鈫?I2C1_SDA
+devmem 0x030010D0 b 0x2   # P18 閳?I2C1_SCL
+devmem 0x030010DC b 0x2   # P21 閳?I2C1_SDA
 
 # 3. Load i2c-dev module
 modprobe i2c-dev
@@ -41,10 +41,10 @@ ls /dev/i2c-*
 /etc/init.d/S30wifi stop
 
 # 2. Configure pinmux for SPI-2
-devmem 0x030010D0 b 0x1   # P18 鈫?SPI2_CS
-devmem 0x030010DC b 0x1   # P21 鈫?SPI2_MISO
-devmem 0x030010E0 b 0x1   # P22 鈫?SPI2_MOSI
-devmem 0x030010E4 b 0x1   # P23 鈫?SPI2_SCK
+devmem 0x030010D0 b 0x1   # P18 閳?SPI2_CS
+devmem 0x030010DC b 0x1   # P21 閳?SPI2_MISO
+devmem 0x030010E0 b 0x1   # P22 閳?SPI2_MOSI
+devmem 0x030010E4 b 0x1   # P23 閳?SPI2_SCK
 
 # 3. Verify
 ls /dev/spidev*
@@ -64,14 +64,14 @@ ls /dev/spidev*
 |-----|------|-------|
 | I2C-1 | Overlaps with WiFi | Not recommended |
 | I2C-3 | Overlaps with WiFi | Not recommended |
-| I2C-5 | A15 (SCL), A27 (SDA) | **Recommended** 鈥?software I2C, no conflicts |
+| I2C-5 | A15 (SCL), A27 (SDA) | **Recommended** 閳?software I2C, no conflicts |
 
 ### Setup Steps for I2C-5
 
 ```bash
 # Configure pins using pinmap utility
 # (MaixCAM uses a pinmap tool instead of devmem)
-# Refer to: https://wiki.sipeed.com/hardware/en/maixcam/gpio.html
+# Refer to: https://4claw.io/hardware/en/maixcam/gpio.html
 
 # Load i2c-dev
 modprobe i2c-dev
@@ -95,7 +95,7 @@ ls /dev/i2c-*
 
 ```bash
 # Configure pinmap for I2C-6
-# A1 鈫?I2C6_SCL, A0 鈫?I2C6_SDA
+# A1 閳?I2C6_SCL, A0 閳?I2C6_SDA
 # Refer to MaixCAM2 documentation for pinmap commands
 
 modprobe i2c-dev
@@ -109,7 +109,7 @@ ls /dev/i2c-*
 Uses the same SG2002 SoC as LicheeRV Nano. GPIO and I2C access follows the same pinmux procedure. Refer to the LicheeRV Nano section above.
 
 Check NanoKVM-specific pin headers for available I2C/SPI lines:
-- https://wiki.sipeed.com/hardware/en/kvm/NanoKVM/introduction.html
+- https://4claw.io/hardware/en/kvm/NanoKVM/introduction.html
 
 ---
 
@@ -118,7 +118,7 @@ Check NanoKVM-specific pin headers for available I2C/SPI lines:
 ### devmem not found
 The `devmem` utility may not be in the default image. Options:
 - Use `busybox devmem` if busybox is installed
-- Download devmem from the Sipeed package repository
+- Download devmem from the board vendor package repository
 - Cross-compile from source (single C file)
 
 ### Dynamic bus numbering

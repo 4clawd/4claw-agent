@@ -3,7 +3,7 @@ package routing
 import (
 	"strings"
 
-	"github.com/sipeed/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/config"
 )
 
 // RouteInput contains the routing context from an inbound message.

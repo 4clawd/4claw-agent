@@ -11,8 +11,8 @@ import (
 	"github.com/openai/openai-go/v3/option"
 	"github.com/openai/openai-go/v3/responses"
 
-	"github.com/sipeed/4claw/pkg/auth"
-	"github.com/sipeed/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/auth"
+	"github.com/4claw/4claw/pkg/logger"
 )
 
 const (

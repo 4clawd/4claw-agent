@@ -1,5 +1,5 @@
 // 4claw - Ultra-lightweight personal AI agent
-// WeCom Bot (浼佷笟寰俊鏅鸿兘鏈哄櫒浜? channel tests
+// WeCom Bot (娴间椒绗熷顔讳繆閺呴缚鍏橀張鍝勬珤娴? channel tests
 
 package channels
 
@@ -20,8 +20,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/sipeed/4claw/pkg/bus"
-	"github.com/sipeed/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/bus"
+	"github.com/4claw/4claw/pkg/config"
 )
 
 // generateTestAESKey generates a valid test AES key

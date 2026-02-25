@@ -1,4 +1,4 @@
-module github.com/sipeed/4claw
+module github.com/4claw/4claw
 
 go 1.25.7
 

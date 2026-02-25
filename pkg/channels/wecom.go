@@ -1,5 +1,5 @@
 // 4claw - Ultra-lightweight personal AI agent
-// WeCom Bot (浼佷笟寰俊鏅鸿兘鏈哄櫒浜? channel implementation
+// WeCom Bot (娴间椒绗熷顔讳繆閺呴缚鍏橀張鍝勬珤娴? channel implementation
 // Uses webhook callback mode for receiving messages and webhook API for sending replies
 
 package channels
@@ -22,13 +22,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/bus"
-	"github.com/sipeed/4claw/pkg/config"
-	"github.com/sipeed/4claw/pkg/logger"
-	"github.com/sipeed/4claw/pkg/utils"
+	"github.com/4claw/4claw/pkg/bus"
+	"github.com/4claw/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/utils"
 )
 
-// WeComBotChannel implements the Channel interface for WeCom Bot (浼佷笟寰俊鏅鸿兘鏈哄櫒浜?
+// WeComBotChannel implements the Channel interface for WeCom Bot (娴间椒绗熷顔讳繆閺呴缚鍏橀張鍝勬珤娴?
 // Uses webhook callback mode - simpler than WeCom App but only supports passive replies
 type WeComBotChannel struct {
 	*BaseChannel
@@ -226,7 +226,7 @@ func (c *WeComBotChannel) handleVerification(ctx context.Context, w http.Respons
 	}
 
 	// Decrypt echostr
-	// For AIBOT (鏅鸿兘鏈哄櫒浜?, receiveid should be empty string ""
+	// For AIBOT (閺呴缚鍏橀張鍝勬珤娴?, receiveid should be empty string ""
 	// Reference: https://developer.work.weixin.qq.com/document/path/101033
 	decryptedEchoStr, err := WeComDecryptMessageWithVerify(echostr, c.config.EncodingAESKey, "")
 	if err != nil {
@@ -288,7 +288,7 @@ func (c *WeComBotChannel) handleMessageCallback(ctx context.Context, w http.Resp
 	}
 
 	// Decrypt message
-	// For AIBOT (鏅鸿兘鏈哄櫒浜?, receiveid should be empty string ""
+	// For AIBOT (閺呴缚鍏橀張鍝勬珤娴?, receiveid should be empty string ""
 	// Reference: https://developer.work.weixin.qq.com/document/path/101033
 	decryptedMsg, err := WeComDecryptMessageWithVerify(encryptedMsg.Encrypt, c.config.EncodingAESKey, "")
 	if err != nil {

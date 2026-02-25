@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/config"
-	"github.com/sipeed/4claw/pkg/skills"
-	"github.com/sipeed/4claw/pkg/utils"
+	"github.com/4claw/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/skills"
+	"github.com/4claw/4claw/pkg/utils"
 )
 
 func skillsHelp() {
@@ -28,7 +28,7 @@ func skillsHelp() {
 	fmt.Println()
 	fmt.Println("Examples:")
 	fmt.Println("  4claw skills list")
-	fmt.Println("  4claw skills install sipeed/4claw-skills/weather")
+	fmt.Println("  4claw skills install 4claw/4claw-skills/weather")
 	fmt.Println("  4claw skills install-builtin")
 	fmt.Println("  4claw skills list-builtin")
 	fmt.Println("  4claw skills remove weather")
@@ -274,9 +274,6 @@ func skillsSearchCmd(installer *skills.SkillInstaller) {
 		fmt.Printf("  - %s\n", skill.Name)
 		fmt.Printf("    %s\n", skill.Description)
 		fmt.Printf("    Repo: %s\n", skill.Repository)
-		if skill.Author != "" {
-			fmt.Printf("    Author: %s\n", skill.Author)
-		}
 		if len(skill.Tags) > 0 {
 			fmt.Printf("    Tags: %v\n", skill.Tags)
 		}

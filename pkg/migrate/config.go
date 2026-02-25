@@ -8,7 +8,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/sipeed/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/config"
 )
 
 var supportedProviders = map[string]bool{

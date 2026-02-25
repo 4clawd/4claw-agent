@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/sipeed/4claw/pkg/bus"
-	"github.com/sipeed/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/bus"
+	"github.com/4claw/4claw/pkg/config"
 )
 
 // FeishuChannel is a stub implementation for 32-bit architectures

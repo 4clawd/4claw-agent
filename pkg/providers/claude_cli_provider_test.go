@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/config"
 )
 
 // --- Compile-time interface check ---

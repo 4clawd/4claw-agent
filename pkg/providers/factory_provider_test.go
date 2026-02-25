@@ -8,7 +8,7 @@ package providers
 import (
 	"testing"
 
-	"github.com/sipeed/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/config"
 )
 
 func TestExtractProtocol(t *testing.T) {

@@ -9,9 +9,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/logger"
-	"github.com/sipeed/4claw/pkg/skills"
-	"github.com/sipeed/4claw/pkg/utils"
+	"github.com/4claw/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/skills"
+	"github.com/4claw/4claw/pkg/utils"
 )
 
 // InstallSkillTool allows the LLM agent to install skills from registries.
@@ -161,7 +161,7 @@ func (t *InstallSkillTool) Execute(ctx context.Context, args map[string]any) *To
 	// Build result with moderation warning if suspicious.
 	var output string
 	if result.IsSuspicious {
-		output = fmt.Sprintf("鈿狅笍 Warning: skill %q is flagged as suspicious (may contain risky patterns).\n\n", slug)
+		output = fmt.Sprintf("閳跨媴绗?Warning: skill %q is flagged as suspicious (may contain risky patterns).\n\n", slug)
 	}
 	output += fmt.Sprintf("Successfully installed skill %q v%s from %s registry.\nLocation: %s\n",
 		slug, result.Version, registry.Name(), targetDir)

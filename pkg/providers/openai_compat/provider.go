@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/providers/protocoltypes"
+	"github.com/4claw/4claw/pkg/providers/protocoltypes"
 )
 
 type (

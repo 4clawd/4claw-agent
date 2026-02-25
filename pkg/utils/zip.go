@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sipeed/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/logger"
 )
 
 // ExtractZipFile extracts a ZIP archive from disk to targetDir.

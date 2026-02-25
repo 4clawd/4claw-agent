@@ -1,5 +1,5 @@
 // 4claw - Ultra-lightweight personal AI agent
-// WeCom App (浼佷笟寰俊鑷缓搴旂敤) channel tests
+// WeCom App (娴间椒绗熷顔讳繆閼奉亜缂撴惔鏃傛暏) channel tests
 
 package channels
 
@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/bus"
-	"github.com/sipeed/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/bus"
+	"github.com/4claw/4claw/pkg/config"
 )
 
 // generateTestAESKeyApp generates a valid test AES key for WeCom App

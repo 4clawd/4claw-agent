@@ -10,11 +10,11 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/sipeed/4claw/pkg/bus"
-	"github.com/sipeed/4claw/pkg/config"
-	"github.com/sipeed/4claw/pkg/logger"
-	"github.com/sipeed/4claw/pkg/utils"
-	"github.com/sipeed/4claw/pkg/voice"
+	"github.com/4claw/4claw/pkg/bus"
+	"github.com/4claw/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/utils"
+	"github.com/4claw/4claw/pkg/voice"
 )
 
 const (
@@ -29,7 +29,7 @@ type DiscordChannel struct {
 	transcriber *voice.GroqTranscriber
 	ctx         context.Context
 	typingMu    sync.Mutex
-	typingStop  map[string]chan struct{} // chatID 鈫?stop signal
+	typingStop  map[string]chan struct{} // chatID 閳?stop signal
 	botUserID   string                   // stored for mention checking
 }
 
@@ -277,7 +277,7 @@ func (c *DiscordChannel) handleMessage(s *discordgo.Session, m *discordgo.Messag
 		content = "[media only]"
 	}
 
-	// Start typing after all early returns 鈥?guaranteed to have a matching Send()
+	// Start typing after all early returns 閳?guaranteed to have a matching Send()
 	c.startTyping(m.ChannelID)
 
 	logger.DebugCF("discord", "Received message", map[string]any{

@@ -19,7 +19,6 @@ type AvailableSkill struct {
 	Name        string   `json:"name"`
 	Repository  string   `json:"repository"`
 	Description string   `json:"description"`
-	Author      string   `json:"author"`
 	Tags        []string `json:"tags"`
 }
 
@@ -86,7 +85,7 @@ func (si *SkillInstaller) Uninstall(skillName string) error {
 }
 
 func (si *SkillInstaller) ListAvailableSkills(ctx context.Context) ([]AvailableSkill, error) {
-	url := "https://raw.githubusercontent.com/sipeed/4claw-skills/main/skills.json"
+	url := "https://raw.githubusercontent.com/4claw/4claw-skills/main/skills.json"
 
 	client := &http.Client{Timeout: 15 * time.Second}
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)

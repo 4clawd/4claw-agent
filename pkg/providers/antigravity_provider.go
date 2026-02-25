@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/auth"
-	"github.com/sipeed/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/auth"
+	"github.com/4claw/4claw/pkg/logger"
 )
 
 const (
@@ -88,7 +88,7 @@ func (p *AntigravityProvider) Chat(
 		return nil, fmt.Errorf("marshaling request: %w", err)
 	}
 
-	// Build API URL 鈥?uses Cloud Code Assist v1internal streaming endpoint
+	// Build API URL 閳?uses Cloud Code Assist v1internal streaming endpoint
 	apiURL := fmt.Sprintf("%s/v1internal:streamGenerateContent?alt=sse", antigravityBaseURL)
 
 	req, err := http.NewRequestWithContext(ctx, "POST", apiURL, bytes.NewReader(bodyBytes))
@@ -130,7 +130,7 @@ func (p *AntigravityProvider) Chat(
 		return nil, p.parseAntigravityError(resp.StatusCode, respBody)
 	}
 
-	// Response is always SSE from streamGenerateContent 鈥?each line is "data: {...}"
+	// Response is always SSE from streamGenerateContent 閳?each line is "data: {...}"
 	// with a "response" wrapper containing the standard Gemini response
 	llmResp, err := p.parseSSEResponse(string(respBody))
 	if err != nil {

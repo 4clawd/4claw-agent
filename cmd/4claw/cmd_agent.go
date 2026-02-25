@@ -14,10 +14,10 @@ import (
 
 	"github.com/chzyer/readline"
 
-	"github.com/sipeed/4claw/pkg/agent"
-	"github.com/sipeed/4claw/pkg/bus"
-	"github.com/sipeed/4claw/pkg/logger"
-	"github.com/sipeed/4claw/pkg/providers"
+	"github.com/4claw/4claw/pkg/agent"
+	"github.com/4claw/4claw/pkg/bus"
+	"github.com/4claw/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/providers"
 )
 
 func agentCmd() {

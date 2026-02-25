@@ -3,10 +3,10 @@ package agent
 import (
 	"sync"
 
-	"github.com/sipeed/4claw/pkg/config"
-	"github.com/sipeed/4claw/pkg/logger"
-	"github.com/sipeed/4claw/pkg/providers"
-	"github.com/sipeed/4claw/pkg/routing"
+	"github.com/4claw/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/providers"
+	"github.com/4claw/4claw/pkg/routing"
 )
 
 // AgentRegistry manages multiple agent instances and routes messages to them.

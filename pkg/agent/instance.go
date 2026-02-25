@@ -5,11 +5,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sipeed/4claw/pkg/config"
-	"github.com/sipeed/4claw/pkg/providers"
-	"github.com/sipeed/4claw/pkg/routing"
-	"github.com/sipeed/4claw/pkg/session"
-	"github.com/sipeed/4claw/pkg/tools"
+	"github.com/4claw/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/providers"
+	"github.com/4claw/4claw/pkg/routing"
+	"github.com/4claw/4claw/pkg/session"
+	"github.com/4claw/4claw/pkg/tools"
 )
 
 // AgentInstance represents a fully configured agent with its own workspace,

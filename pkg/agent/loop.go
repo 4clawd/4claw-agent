@@ -1,5 +1,5 @@
 // 4claw - Ultra-lightweight personal AI agent
-// Inspired by and based on nanobot: https://github.com/HKUDS/nanobot
+// Built and maintained by 4claw contributors.
 // License: MIT
 //
 // Copyright (c) 2026 4claw contributors
@@ -16,17 +16,17 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/sipeed/4claw/pkg/bus"
-	"github.com/sipeed/4claw/pkg/channels"
-	"github.com/sipeed/4claw/pkg/config"
-	"github.com/sipeed/4claw/pkg/constants"
-	"github.com/sipeed/4claw/pkg/logger"
-	"github.com/sipeed/4claw/pkg/providers"
-	"github.com/sipeed/4claw/pkg/routing"
-	"github.com/sipeed/4claw/pkg/skills"
-	"github.com/sipeed/4claw/pkg/state"
-	"github.com/sipeed/4claw/pkg/tools"
-	"github.com/sipeed/4claw/pkg/utils"
+	"github.com/4claw/4claw/pkg/bus"
+	"github.com/4claw/4claw/pkg/channels"
+	"github.com/4claw/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/constants"
+	"github.com/4claw/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/providers"
+	"github.com/4claw/4claw/pkg/routing"
+	"github.com/4claw/4claw/pkg/skills"
+	"github.com/4claw/4claw/pkg/state"
+	"github.com/4claw/4claw/pkg/tools"
+	"github.com/4claw/4claw/pkg/utils"
 )
 
 type AgentLoop struct {

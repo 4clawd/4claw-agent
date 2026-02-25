@@ -5,12 +5,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/sipeed/4claw/pkg/bus"
-	"github.com/sipeed/4claw/pkg/constants"
-	"github.com/sipeed/4claw/pkg/devices/events"
-	"github.com/sipeed/4claw/pkg/devices/sources"
-	"github.com/sipeed/4claw/pkg/logger"
-	"github.com/sipeed/4claw/pkg/state"
+	"github.com/4claw/4claw/pkg/bus"
+	"github.com/4claw/4claw/pkg/constants"
+	"github.com/4claw/4claw/pkg/devices/events"
+	"github.com/4claw/4claw/pkg/devices/sources"
+	"github.com/4claw/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/state"
 )
 
 type Service struct {

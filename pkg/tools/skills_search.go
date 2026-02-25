@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sipeed/4claw/pkg/skills"
+	"github.com/4claw/4claw/pkg/skills"
 )
 
 // FindSkillsTool allows the LLM agent to search for installable skills from registries.

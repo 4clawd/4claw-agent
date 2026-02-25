@@ -1,8 +1,8 @@
 ---
 name: hardware
-description: Read and control I2C and SPI peripherals on Sipeed boards (LicheeRV Nano, MaixCAM, NanoKVM).
-homepage: https://wiki.sipeed.com/hardware/en/lichee/RV_Nano/1_intro.html
-metadata: {"nanobot":{"emoji":"🔧","requires":{"tools":["i2c","spi"]}}}
+description: Read and control I2C and SPI peripherals on 4claw-supported boards (LicheeRV Nano, MaixCAM, NanoKVM).
+homepage: https://4claw.io/hardware/en/lichee/RV_Nano/1_intro.html
+metadata: {"4claw":{"emoji":"棣冩暋","requires":{"tools":["i2c","spi"]}}}
 ---
 
 # Hardware (I2C / SPI)
@@ -26,9 +26,9 @@ spi list
 spi read  (device: "2.0", length: 4)
 ```
 
-## Before You Start — Pinmux Setup
+## Before You Start 閳?Pinmux Setup
 
-Most I2C/SPI pins are shared with WiFi on Sipeed boards. You must configure pinmux before use.
+Most I2C/SPI pins are shared with WiFi on supported boards. You must configure pinmux before use.
 
 See `references/board-pinout.md` for board-specific commands.
 
@@ -40,7 +40,7 @@ See `references/board-pinout.md` for board-specific commands.
 
 ## Safety
 
-- **Write operations** require `confirm: true` — always confirm with the user first
+- **Write operations** require `confirm: true` 閳?always confirm with the user first
 - I2C addresses are validated to 7-bit range (0x03-0x77)
 - SPI modes are validated (0-3 only)
 - Maximum per-transaction: 256 bytes (I2C), 4096 bytes (SPI)

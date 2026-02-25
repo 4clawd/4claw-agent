@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/sipeed/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/logger"
 )
 
 // DownloadToFile streams an HTTP response body to a temporary file in small
@@ -56,7 +56,7 @@ func DownloadToFile(ctx context.Context, client *http.Client, req *http.Request,
 		"path": tmpPath,
 	})
 
-	// Cleanup helper 鈥?removes the temp file on any error.
+	// Cleanup helper 閳?removes the temp file on any error.
 	cleanup := func() {
 		_ = tmpFile.Close()
 		_ = os.Remove(tmpPath)

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sipeed/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/config"
 )
 
 type ActionType int
@@ -155,10 +155,10 @@ func Execute(actions []Action, openclawHome, fourClawHome string) *Result {
 		case ActionConvertConfig:
 			if err := executeConfigMigration(action.Source, action.Destination, fourClawHome); err != nil {
 				result.Errors = append(result.Errors, fmt.Errorf("config migration: %w", err))
-				fmt.Printf("  鉁?Config migration failed: %v\n", err)
+				fmt.Printf("  閴?Config migration failed: %v\n", err)
 			} else {
 				result.ConfigMigrated = true
-				fmt.Printf("  鉁?Converted config: %s\n", action.Destination)
+				fmt.Printf("  閴?Converted config: %s\n", action.Destination)
 			}
 		case ActionCreateDir:
 			if err := os.MkdirAll(action.Destination, 0o755); err != nil {
@@ -170,12 +170,12 @@ func Execute(actions []Action, openclawHome, fourClawHome string) *Result {
 			bakPath := action.Destination + ".bak"
 			if err := copyFile(action.Destination, bakPath); err != nil {
 				result.Errors = append(result.Errors, fmt.Errorf("backup %s: %w", action.Destination, err))
-				fmt.Printf("  鉁?Backup failed: %s\n", action.Destination)
+				fmt.Printf("  閴?Backup failed: %s\n", action.Destination)
 				continue
 			}
 			result.BackupsCreated++
 			fmt.Printf(
-				"  鉁?Backed up %s -> %s.bak\n",
+				"  閴?Backed up %s -> %s.bak\n",
 				filepath.Base(action.Destination),
 				filepath.Base(action.Destination),
 			)
@@ -186,10 +186,10 @@ func Execute(actions []Action, openclawHome, fourClawHome string) *Result {
 			}
 			if err := copyFile(action.Source, action.Destination); err != nil {
 				result.Errors = append(result.Errors, fmt.Errorf("copy %s: %w", action.Source, err))
-				fmt.Printf("  鉁?Copy failed: %s\n", action.Source)
+				fmt.Printf("  閴?Copy failed: %s\n", action.Source)
 			} else {
 				result.FilesCopied++
-				fmt.Printf("  鉁?Copied %s\n", relPath(action.Source, openclawHome))
+				fmt.Printf("  閴?Copied %s\n", relPath(action.Source, openclawHome))
 			}
 		case ActionCopy:
 			if err := os.MkdirAll(filepath.Dir(action.Destination), 0o755); err != nil {
@@ -198,10 +198,10 @@ func Execute(actions []Action, openclawHome, fourClawHome string) *Result {
 			}
 			if err := copyFile(action.Source, action.Destination); err != nil {
 				result.Errors = append(result.Errors, fmt.Errorf("copy %s: %w", action.Source, err))
-				fmt.Printf("  鉁?Copy failed: %s\n", action.Source)
+				fmt.Printf("  閴?Copy failed: %s\n", action.Source)
 			} else {
 				result.FilesCopied++
-				fmt.Printf("  鉁?Copied %s\n", relPath(action.Source, openclawHome))
+				fmt.Printf("  閴?Copied %s\n", relPath(action.Source, openclawHome))
 			}
 		case ActionSkip:
 			result.FilesSkipped++

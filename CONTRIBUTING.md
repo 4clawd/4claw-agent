@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to 4claw! This project is a community-driven effort to build the lightweight and versatile personal AI assistant. We welcome contributions of all kinds: bug fixes, features, documentation, translations, and testing.
 
-4claw itself was substantially developed with AI assistance 鈥?we embrace this approach and have built our contribution process around it.
+4claw itself was substantially developed with AI assistance 閳?we embrace this approach and have built our contribution process around it.
 
 ## Table of Contents
 
@@ -27,11 +27,11 @@ We are committed to maintaining a welcoming and respectful community. Be kind, c
 
 ## Ways to Contribute
 
-- **Bug reports** 鈥?Open an issue using the bug report template.
-- **Feature requests** 鈥?Open an issue using the feature request template; discuss before implementing.
-- **Code** 鈥?Fix bugs or implement features. See the workflow below.
-- **Documentation** 鈥?Improve READMEs, docs, inline comments, or translations.
-- **Testing** 鈥?Run 4claw on new hardware, channels, or LLM providers and report your results.
+- **Bug reports** 閳?Open an issue using the bug report template.
+- **Feature requests** 閳?Open an issue using the feature request template; discuss before implementing.
+- **Code** 閳?Fix bugs or implement features. See the workflow below.
+- **Documentation** 閳?Improve READMEs, docs, inline comments, or translations.
+- **Testing** 閳?Run 4claw on new hardware, channels, or LLM providers and report your results.
 
 For substantial new features, please open an issue first to discuss the design before writing code. This prevents wasted effort and ensures alignment with the project's direction.
 
@@ -47,7 +47,7 @@ For substantial new features, please open an issue first to discuss the design b
    ```
 3. Add the upstream remote:
    ```bash
-   git remote add upstream https://github.com/sipeed/4claw.git
+   git remote add upstream https://github.com/4claw/4claw.git
    ```
 
 ---
@@ -108,7 +108,7 @@ Use descriptive branch names, e.g. `fix/telegram-timeout`, `feat/ollama-provider
 - Reference the related issue when relevant: `Fix session leak (#123)`.
 - Keep commits focused. One logical change per commit is preferred.
 - For minor cleanups or typo fixes, squash them into a single commit before opening a PR.
-- Refer to聽https://www.conventionalcommits.org/zh-hans/v1.0.0/
+- Refer to鑱絟ttps://www.conventionalcommits.org/zh-hans/v1.0.0/
 
 ### Keeping Up to Date
 
@@ -127,15 +127,15 @@ git rebase upstream/main
 
 ### Disclosure Is Required
 
-Every PR must disclose AI involvement using the PR template's **馃 AI Code Generation** section. There are three levels:
+Every PR must disclose AI involvement using the PR template's **棣冾樆 AI Code Generation** section. There are three levels:
 
 | Level | Description |
 |---|---|
-| 馃 Fully AI-generated | AI wrote the code; contributor reviewed and validated it |
-| 馃洜锔?Mostly AI-generated | AI produced the draft; contributor made significant modifications |
-| 馃懆鈥嶐煉?Mostly Human-written | Contributor led; AI provided suggestions or none at all |
+| 棣冾樆 Fully AI-generated | AI wrote the code; contributor reviewed and validated it |
+| 棣冩礈閿?Mostly AI-generated | AI produced the draft; contributor made significant modifications |
+| 棣冩噯閳ュ稅鐓?Mostly Human-written | Contributor led; AI provided suggestions or none at all |
 
-Honest disclosure is expected. There is no stigma attached to any level 鈥?what matters is the quality of the contribution.
+Honest disclosure is expected. There is no stigma attached to any level 閳?what matters is the quality of the contribution.
 
 ### You Are Responsible for What You Submit
 
@@ -143,8 +143,8 @@ Using AI to generate code does not reduce your responsibility as the contributor
 
 - **Read and understand** every line of the generated code.
 - **Test it** in a real environment (see the Test Environment section of the PR template).
-- **Check for security issues** 鈥?AI models can generate subtly insecure code (e.g., path traversal, injection, credential exposure). Review carefully.
-- **Verify correctness** 鈥?AI-generated logic can be plausible-sounding but wrong. Validate the behavior, not just the syntax.
+- **Check for security issues** 閳?AI models can generate subtly insecure code (e.g., path traversal, injection, credential exposure). Review carefully.
+- **Verify correctness** 閳?AI-generated logic can be plausible-sounding but wrong. Validate the behavior, not just the syntax.
 
 PRs where it is clear the contributor has not read or tested the AI-generated code will be closed without review.
 
@@ -166,7 +166,7 @@ AI-generated code requires extra security scrutiny. Pay special attention to:
 - Credential or secret handling
 - Command execution (`exec.Command`, shell invocations)
 
-If you are unsure whether a piece of AI-generated code is safe, say so in the PR 鈥?reviewers will help.
+If you are unsure whether a piece of AI-generated code is safe, say so in the PR 閳?reviewers will help.
 
 ---
 
@@ -183,14 +183,14 @@ If you are unsure whether a piece of AI-generated code is safe, say so in the PR
 
 The PR template asks for:
 
-- **Description** 鈥?What does this change do and why?
-- **Type of Change** 鈥?Bug fix, feature, docs, or refactor.
-- **AI Code Generation** 鈥?Disclosure of AI involvement (required).
-- **Related Issue** 鈥?Link to the issue this addresses.
-- **Technical Context** 鈥?Reference URLs and reasoning (skip for pure docs PRs).
-- **Test Environment** 鈥?Hardware, OS, model/provider, and channels used for testing.
-- **Evidence** 鈥?Optional logs or screenshots demonstrating the change works.
-- **Checklist** 鈥?Self-review confirmation.
+- **Description** 閳?What does this change do and why?
+- **Type of Change** 閳?Bug fix, feature, docs, or refactor.
+- **AI Code Generation** 閳?Disclosure of AI involvement (required).
+- **Related Issue** 閳?Link to the issue this addresses.
+- **Technical Context** 閳?Reference URLs and reasoning (skip for pure docs PRs).
+- **Test Environment** 閳?Hardware, OS, model/provider, and channels used for testing.
+- **Evidence** 閳?Optional logs or screenshots demonstrating the change works.
+- **Checklist** 閳?Self-review confirmation.
 
 ### PR Size
 
@@ -202,17 +202,17 @@ Prefer small, reviewable PRs. A PR that changes 200 lines across 5 files is much
 
 ### Long-Lived Branches
 
-- **`main`** 鈥?the active development branch. All feature PRs target `main`. The branch is protected: direct pushes are not permitted, and at least one maintainer approval is required before merging.
-- **`release/x.y`** 鈥?stable release branches, cut from `main` when a version is ready to ship. These branches are more strictly protected than `main`.
+- **`main`** 閳?the active development branch. All feature PRs target `main`. The branch is protected: direct pushes are not permitted, and at least one maintainer approval is required before merging.
+- **`release/x.y`** 閳?stable release branches, cut from `main` when a version is ready to ship. These branches are more strictly protected than `main`.
 
 ### Requirements to Merge into `main`
 
 A PR can only be merged when all of the following are satisfied:
 
-1. **CI passes** 鈥?All GitHub Actions workflows (lint, test, build) must be green.
-2. **Reviewer approval** 鈥?At least one maintainer has approved the PR.
-3. **No unresolved review comments** 鈥?All review threads must be resolved.
-4. **PR template is complete** 鈥?Including AI disclosure and test environment.
+1. **CI passes** 閳?All GitHub Actions workflows (lint, test, build) must be green.
+2. **Reviewer approval** 閳?At least one maintainer has approved the PR.
+3. **No unresolved review comments** 閳?All review threads must be resolved.
+4. **PR template is complete** 閳?Including AI disclosure and test environment.
 
 ### Who Can Merge
 
@@ -248,19 +248,19 @@ Release branches have stricter protections than `main` and are never directly pu
 - Respond to review comments within a reasonable time. If you need more time, say so.
 - When you update a PR in response to feedback, briefly note what changed (e.g., "Updated to use `sync.RWMutex` as suggested").
 - If you disagree with feedback, engage respectfully. Explain your reasoning; reviewers can be wrong too.
-- Do not force-push after a review has started 鈥?it makes it harder for reviewers to see what changed. Use additional commits instead; the maintainer will squash on merge.
+- Do not force-push after a review has started 閳?it makes it harder for reviewers to see what changed. Use additional commits instead; the maintainer will squash on merge.
 
 ### For Reviewers
 
 Review for:
 
-1. **Correctness** 鈥?Does the code do what it claims? Are there edge cases?
-2. **Security** 鈥?Especially for AI-generated code, tool implementations, and channel handlers.
-3. **Architecture** 鈥?Is the approach consistent with the existing design?
-4. **Simplicity** 鈥?Is there a simpler solution? Does this add unnecessary complexity?
-5. **Tests** 鈥?Are the changes covered by tests? Are existing tests still meaningful?
+1. **Correctness** 閳?Does the code do what it claims? Are there edge cases?
+2. **Security** 閳?Especially for AI-generated code, tool implementations, and channel handlers.
+3. **Architecture** 閳?Is the approach consistent with the existing design?
+4. **Simplicity** 閳?Is there a simpler solution? Does this add unnecessary complexity?
+5. **Tests** 閳?Are the changes covered by tests? Are existing tests still meaningful?
 
-Be constructive and specific. "This could have a race condition if two goroutines call this concurrently 鈥?consider using a mutex here" is better than "this looks wrong".
+Be constructive and specific. "This could have a race condition if two goroutines call this concurrently 閳?consider using a mutex here" is better than "this looks wrong".
 
 
 ### Reviewer List
@@ -284,10 +284,10 @@ Once your PR is submitted, you can reach out to the assigned reviewers listed in
 
 ## Communication
 
-- **GitHub Issues** 鈥?Bug reports, feature requests, design discussions.
-- **GitHub Discussions** 鈥?General questions, ideas, community conversation.
-- **Pull Request comments** 鈥?Code-specific feedback.
-- **Wechat&Discord** 鈥?We will invite you when you have at least one merged PR
+- **GitHub Issues** 閳?Bug reports, feature requests, design discussions.
+- **GitHub Discussions** 閳?General questions, ideas, community conversation.
+- **Pull Request comments** 閳?Code-specific feedback.
+- **Wechat&Discord** 閳?We will invite you when you have at least one merged PR
 
 When in doubt, open an issue before writing code. It costs little and prevents wasted effort.
 
@@ -295,7 +295,7 @@ When in doubt, open an issue before writing code. It costs little and prevents w
 
 ## A Note on the Project's AI-Driven Origin
 
-4claw's architecture was substantially designed and implemented with AI assistance, guided by human oversight. If you find something that looks odd or over-engineered, it may be an artifact of that process 鈥?opening an issue to discuss it is always welcome.
+4claw's architecture was substantially designed and implemented with AI assistance, guided by human oversight. If you find something that looks odd or over-engineered, it may be an artifact of that process 閳?opening an issue to discuss it is always welcome.
 
 We believe AI-assisted development done responsibly produces great results. We also believe humans must remain accountable for what they ship. These two beliefs are not in conflict.
 

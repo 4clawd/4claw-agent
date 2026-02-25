@@ -4,7 +4,7 @@
 4claw
 
 ## Description
-Ultra-lightweight personal AI assistant written in Go, inspired by nanobot.
+Ultra-lightweight personal AI assistant written in Go.
 
 ## Version
 0.1.0
@@ -44,11 +44,11 @@ Ultra-lightweight personal AI assistant written in Go, inspired by nanobot.
 MIT License - Free and open source
 
 ## Repository
-https://github.com/sipeed/4claw
+https://github.com/4claw/4claw
 
 ## Contact
-Issues: https://github.com/sipeed/4claw/issues
-Discussions: https://github.com/sipeed/4claw/discussions
+Issues: https://github.com/4claw/4claw/issues
+Discussions: https://github.com/4claw/4claw/discussions
 
 ---
 

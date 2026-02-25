@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/logger"
-	"github.com/sipeed/4claw/pkg/providers"
-	"github.com/sipeed/4claw/pkg/skills"
-	"github.com/sipeed/4claw/pkg/tools"
+	"github.com/4claw/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/providers"
+	"github.com/4claw/4claw/pkg/skills"
+	"github.com/4claw/4claw/pkg/tools"
 )
 
 type ContextBuilder struct {
@@ -56,7 +56,7 @@ func (cb *ContextBuilder) getIdentity() string {
 	// Build tools section dynamically
 	toolsSection := cb.buildToolsSection()
 
-	return fmt.Sprintf(`# 4claw 馃
+	return fmt.Sprintf(`# 4claw 棣冾渻
 
 You are 4claw, a helpful AI assistant.
 

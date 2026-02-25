@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/auth"
-	"github.com/sipeed/4claw/pkg/config"
-	"github.com/sipeed/4claw/pkg/providers"
+	"github.com/4claw/4claw/pkg/auth"
+	"github.com/4claw/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/providers"
 )
 
 const supportedProvidersMsg = "Supported providers: openai, anthropic, google-antigravity"

@@ -7,7 +7,7 @@ import (
 
 	"github.com/mymmrac/telego"
 
-	"github.com/sipeed/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/config"
 )
 
 type TelegramCommander interface {
@@ -56,7 +56,7 @@ func (c *cmd) Help(ctx context.Context, message telego.Message) error {
 func (c *cmd) Start(ctx context.Context, message telego.Message) error {
 	_, err := c.bot.SendMessage(ctx, &telego.SendMessageParams{
 		ChatID: telego.ChatID{ID: message.Chat.ID},
-		Text:   "Hello! I am 4claw 馃",
+		Text:   "Hello! I am 4claw 棣冾渻",
 		ReplyParameters: &telego.ReplyParameters{
 			MessageID: message.MessageID,
 		},

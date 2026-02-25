@@ -3,7 +3,7 @@ package agent
 import (
 	"context"
 
-	"github.com/sipeed/4claw/pkg/providers"
+	"github.com/4claw/4claw/pkg/providers"
 )
 
 type mockProvider struct{}

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sipeed/4claw/pkg/auth"
+	"github.com/4claw/4claw/pkg/auth"
 )
 
 func statusCmd() {

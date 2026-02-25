@@ -1,5 +1,5 @@
 // 4claw - Ultra-lightweight personal AI agent
-// Inspired by and based on nanobot: https://github.com/HKUDS/nanobot
+// Built and maintained by 4claw contributors.
 // License: MIT
 //
 // Copyright (c) 2026 4claw contributors
@@ -13,8 +13,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/sipeed/4claw/pkg/config"
-	"github.com/sipeed/4claw/pkg/skills"
+	"github.com/4claw/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/skills"
 )
 
 var (

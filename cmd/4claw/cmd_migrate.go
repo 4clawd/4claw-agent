@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sipeed/4claw/pkg/migrate"
+	"github.com/4claw/4claw/pkg/migrate"
 )
 
 func migrateCmd() {

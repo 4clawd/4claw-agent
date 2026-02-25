@@ -1,5 +1,5 @@
 // 4claw - Ultra-lightweight personal AI agent
-// WeCom App (浼佷笟寰俊鑷缓搴旂敤) channel implementation
+// WeCom App (娴间椒绗熷顔讳繆閼奉亜缂撴惔鏃傛暏) channel implementation
 // Supports receiving messages via webhook callback and sending messages proactively
 
 package channels
@@ -17,17 +17,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/bus"
-	"github.com/sipeed/4claw/pkg/config"
-	"github.com/sipeed/4claw/pkg/logger"
-	"github.com/sipeed/4claw/pkg/utils"
+	"github.com/4claw/4claw/pkg/bus"
+	"github.com/4claw/4claw/pkg/config"
+	"github.com/4claw/4claw/pkg/logger"
+	"github.com/4claw/4claw/pkg/utils"
 )
 
 const (
 	wecomAPIBase = "https://qyapi.weixin.qq.com"
 )
 
-// WeComAppChannel implements the Channel interface for WeCom App (浼佷笟寰俊鑷缓搴旂敤)
+// WeComAppChannel implements the Channel interface for WeCom App (娴间椒绗熷顔讳繆閼奉亜缂撴惔鏃傛暏)
 type WeComAppChannel struct {
 	*BaseChannel
 	config        config.WeComAppConfig
@@ -293,7 +293,7 @@ func (c *WeComAppChannel) handleVerification(ctx context.Context, w http.Respons
 	logger.DebugC("wecom_app", "Signature verification passed")
 
 	// Decrypt echostr with CorpID verification
-	// For WeCom App (鑷缓搴旂敤), receiveid should be corp_id
+	// For WeCom App (閼奉亜缂撴惔鏃傛暏), receiveid should be corp_id
 	logger.DebugCF("wecom_app", "Attempting to decrypt echostr", map[string]any{
 		"encoding_aes_key": c.config.EncodingAESKey,
 		"corp_id":          c.config.CorpID,
@@ -364,7 +364,7 @@ func (c *WeComAppChannel) handleMessageCallback(ctx context.Context, w http.Resp
 	}
 
 	// Decrypt message with CorpID verification
-	// For WeCom App (鑷缓搴旂敤), receiveid should be corp_id
+	// For WeCom App (閼奉亜缂撴惔鏃傛暏), receiveid should be corp_id
 	decryptedMsg, err := WeComDecryptMessageWithVerify(encryptedMsg.Encrypt, c.config.EncodingAESKey, c.config.CorpID)
 	if err != nil {
 		logger.ErrorCF("wecom_app", "Failed to decrypt message", map[string]any{

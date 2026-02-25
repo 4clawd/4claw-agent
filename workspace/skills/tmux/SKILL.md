@@ -1,7 +1,7 @@
 ---
 name: tmux
 description: Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.
-metadata: {"nanobot":{"emoji":"🧵","os":["darwin","linux"],"requires":{"bins":["tmux"]}}}
+metadata: {"4claw":{"emoji":"馃У","os":["darwin","linux"],"requires":{"bins":["tmux"]}}}
 ---
 
 # tmux Skill
@@ -11,10 +11,10 @@ Use tmux only when you need an interactive TTY. Prefer exec background mode for 
 ## Quickstart (isolated socket, exec tool)
 
 ```bash
-SOCKET_DIR="${NANOBOT_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/nanobot-tmux-sockets}"
+SOCKET_DIR="${FOURCLAW_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/4claw-tmux-sockets}"
 mkdir -p "$SOCKET_DIR"
-SOCKET="$SOCKET_DIR/nanobot.sock"
-SESSION=nanobot-python
+SOCKET="$SOCKET_DIR/4claw.sock"
+SESSION=4claw-python
 
 tmux -S "$SOCKET" new -d -s "$SESSION" -n shell
 tmux -S "$SOCKET" send-keys -t "$SESSION":0.0 -- 'PYTHON_BASIC_REPL=1 python3 -q' Enter
@@ -31,8 +31,8 @@ To monitor:
 
 ## Socket convention
 
-- Use `NANOBOT_TMUX_SOCKET_DIR` environment variable.
-- Default socket path: `"$NANOBOT_TMUX_SOCKET_DIR/nanobot.sock"`.
+- Use `FOURCLAW_TMUX_SOCKET_DIR` environment variable.
+- Default socket path: `"$FOURCLAW_TMUX_SOCKET_DIR/4claw.sock"`.
 
 ## Targeting panes and naming
 
@@ -43,7 +43,7 @@ To monitor:
 ## Finding sessions
 
 - List sessions on your socket: `{baseDir}/scripts/find-sessions.sh -S "$SOCKET"`.
-- Scan all sockets: `{baseDir}/scripts/find-sessions.sh --all` (uses `NANOBOT_TMUX_SOCKET_DIR`).
+- Scan all sockets: `{baseDir}/scripts/find-sessions.sh --all` (uses `FOURCLAW_TMUX_SOCKET_DIR`).
 
 ## Sending input safely
 
@@ -83,7 +83,7 @@ tmux -S "$SOCKET" send-keys -t agent-2 "cd /tmp/project2 && codex --yolo 'Fix bu
 
 # Poll for completion (check if prompt returned)
 for sess in agent-1 agent-2; do
-  if tmux -S "$SOCKET" capture-pane -p -t "$sess" -S -3 | grep -q "❯"; then
+  if tmux -S "$SOCKET" capture-pane -p -t "$sess" -S -3 | grep -q "鉂?; then
     echo "$sess: DONE"
   else
     echo "$sess: Running..."
@@ -97,7 +97,7 @@ tmux -S "$SOCKET" capture-pane -p -t agent-1 -S -500
 **Tips:**
 - Use separate git worktrees for parallel fixes (no branch conflicts)
 - `pnpm install` first before running codex in fresh clones
-- Check for shell prompt (`❯` or `$`) to detect completion
+- Check for shell prompt (`鉂痐 or `$`) to detect completion
 - Codex needs `--yolo` or `--full-auto` for non-interactive fixes
 
 ## Cleanup

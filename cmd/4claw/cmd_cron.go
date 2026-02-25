@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/sipeed/4claw/pkg/cron"
+	"github.com/4claw/4claw/pkg/cron"
 )
 
 func cronCmd() {

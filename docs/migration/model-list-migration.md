@@ -215,5 +215,5 @@ api_key or api_base is required for HTTP-based protocol "xxx"
 
 ## Need Help?
 
-- [GitHub Issues](https://github.com/sipeed/4claw/issues)
-- [Discussion #122](https://github.com/sipeed/4claw/discussions/122): Original proposal
+- [GitHub Issues](https://github.com/4claw/4claw/issues)
+- [Discussion #122](https://github.com/4claw/4claw/discussions/122): Original proposal
