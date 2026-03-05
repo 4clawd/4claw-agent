@@ -1,91 +1,104 @@
-# 4claw
+<div align="center">
+  <a href="./README.md"><kbd>English (Default)</kbd></a>
+  <a href="./README.zh.md"><kbd>简体中文</kbd></a>
+  <a href="./README.ja.md"><kbd>日本語</kbd></a>
+  <a href="./README.fr.md"><kbd>Français</kbd></a>
+  <a href="./README.pt-br.md"><kbd>Português (Brasil)</kbd></a>
+  <a href="./README.vi.md"><kbd>Tiếng Việt</kbd></a>
+</div>
 
-4claw is an ultra-lightweight personal AI assistant written in Go.
+<br />
 
-## Key points
+<div align="center">
+  <img src="./docs/images/logo.png" alt="4claw logo" width="128" />
+</div>
 
-- Single binary deployment on Linux systems.
-- Works with multiple model providers.
-- Supports chat channels such as Telegram, Discord, Slack, LINE, WeCom, and others.
-- Includes tools for shell, filesystem, web search, scheduling, and skills.
+<div align="center">
+  <img src="./docs/images/banner.png" alt="4claw banner" width="100%" />
+</div>
 
-## Quick start
+# 4claw Agent Core
 
-1. Build the binary:
+This `agent/` repository is the **core runtime process** behind the `cli/` desktop application.
 
-```bash
-make build
-```
+In simple terms:
 
-2. Initialize local config and workspace:
+- `agent/` = core engine (Go binary, config parsing, tools, gateway runtime)
+- `cli/` = desktop UI shell (Electron app, visual management, tray/window UX)
 
-```bash
-4claw onboard
-```
+## Relationship with `cli/`
 
-3. Configure your model provider in:
+The desktop app in `cli/` does not replace this runtime.  
+It manages this runtime:
 
-- `~/.4claw/config.json`
+1. writes `config.json`
+2. launches/stops the binary (`4claw ... gateway --config ...`)
+3. reads logs
+4. manages backups/import/export
 
-4. Run one-shot message:
+So the `agent/` directory is the actual execution core, while `cli/` is the control plane.
 
-```bash
-4claw agent -m "Hello"
-```
+## Core Capabilities in `agent/`
 
-Use a custom config path with one-shot mode:
+- Go-based single-binary runtime
+- Gateway mode for channel integrations
+- Model/provider routing through config
+- Tool system (filesystem, shell, web, scheduling, skills)
+- Agent execution loop and task orchestration
+- Config-driven behavior with portable deployment
 
-```bash
-4claw agent -c /path/to/config.json -m "Hello"
-```
+## CLI Desktop Screenshots (Control Plane)
 
-5. Start gateway mode:
+Although this repo is runtime-core, here are the `cli/` interface screenshots that operate it:
 
-```bash
-4claw gateway
-```
+### Main Panel
 
-6. Start gateway with a custom config path:
+![CLI Main](./docs/images/main.png)
 
-```bash
-4claw gateway -c /path/to/config.json
-```
+### Settings Panel
 
-## Docker compose
+![CLI Settings](./docs/images/setting.png)
 
-```bash
-cp config/config.example.json config/config.json
-# edit keys in config/config.json
-docker compose --profile gateway up -d
-```
+## Repository Structure
 
-## Main commands
+- `cmd/` and entrypoints for agent runtime
+- `config/` examples and defaults
+- `internal/` core logic
+- `docs/` design and roadmap materials
+- `docs/images/` branding and screenshot assets used in README files
 
-- `4claw onboard`
-- `4claw agent`
-- `4claw gateway`
-- `4claw status`
-- `4claw auth login --provider openai`
-- `4claw cron list`
-- `4claw skills list`
-
-## Configuration
-
-Default paths:
-
-- Config: `~/.4claw/config.json`
-- Workspace: `~/.4claw/workspace`
-
-Environment variable prefix:
-
-- `FOURCLAW_`
-
-## Development
+## Quick Start
 
 ```bash
 make deps
 make build
 ```
+
+Then run:
+
+```bash
+./4claw gateway
+```
+
+Or with custom config:
+
+```bash
+./4claw gateway -c /path/to/config.json
+```
+
+## Typical Workflow with Desktop
+
+1. Build/download this runtime binary from `agent/`.
+2. Put the binary in `cli/resources/bin/`.
+3. Start the Electron app (`cli/`).
+4. Manage multiple runtime instances visually.
+
+## Why This Split Is Useful
+
+- Keeps the runtime lean and portable
+- Keeps desktop UX separate and faster to iterate
+- Allows server/headless usage without UI
+- Allows desktop users to operate multiple agents safely
 
 ## License
 
