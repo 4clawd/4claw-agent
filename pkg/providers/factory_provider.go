@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/4claw/4claw/pkg/auth"
 	"github.com/4claw/4claw/pkg/config"
 )
 
@@ -31,7 +32,23 @@ func createCodexAuthProvider() (LLMProvider, error) {
 		return nil, fmt.Errorf("loading auth credentials: %w", err)
 	}
 	if cred == nil {
+		token, accountID, _, cliErr := ReadCodexCliCredentials()
+		if cliErr == nil && token != "" {
+			return NewCodexProviderWithTokenSource(token, accountID, createCodexTokenSource()), nil
+		}
 		return nil, fmt.Errorf("no credentials for openai. Run: 4claw auth login --provider openai")
+	}
+	if cred.AccessToken == "" {
+		token, accountID, _, cliErr := ReadCodexCliCredentials()
+		if cliErr == nil && token != "" {
+			return NewCodexProviderWithTokenSource(token, accountID, createCodexTokenSource()), nil
+		}
+		return nil, fmt.Errorf("openai credentials are incomplete. Run: 4claw auth login --provider openai")
+	}
+	if cred.AccountID == "" {
+		if recovered := auth.ExtractAccountID(cred.AccessToken); recovered != "" {
+			cred.AccountID = recovered
+		}
 	}
 	return NewCodexProviderWithTokenSource(cred.AccessToken, cred.AccountID, createCodexTokenSource()), nil
 }

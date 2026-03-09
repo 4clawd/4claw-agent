@@ -66,12 +66,17 @@ func decodeBase64(s string) string {
 	return string(data)
 }
 
-func generateState() (string, error) {
+// GenerateState generates a random state string for OAuth CSRF protection.
+func GenerateState() (string, error) {
 	buf := make([]byte, 32)
 	if _, err := rand.Read(buf); err != nil {
 		return "", err
 	}
 	return hex.EncodeToString(buf), nil
+}
+
+func generateState() (string, error) {
+	return GenerateState()
 }
 
 func LoginBrowser(cfg OAuthProviderConfig) (*AuthCredential, error) {
@@ -80,7 +85,7 @@ func LoginBrowser(cfg OAuthProviderConfig) (*AuthCredential, error) {
 		return nil, fmt.Errorf("generating PKCE: %w", err)
 	}
 
-	state, err := generateState()
+	state, err := GenerateState()
 	if err != nil {
 		return nil, fmt.Errorf("generating state: %w", err)
 	}
@@ -127,7 +132,7 @@ func LoginBrowser(cfg OAuthProviderConfig) (*AuthCredential, error) {
 
 	fmt.Printf("Open this URL to authenticate:\n\n%s\n\n", authURL)
 
-	if err := openBrowser(authURL); err != nil {
+	if err := OpenBrowser(authURL); err != nil {
 		fmt.Printf("Could not open browser automatically.\nPlease open this URL manually:\n\n%s\n\n", authURL)
 	}
 
@@ -153,7 +158,7 @@ func LoginBrowser(cfg OAuthProviderConfig) (*AuthCredential, error) {
 		if result.err != nil {
 			return nil, result.err
 		}
-		return exchangeCodeForTokens(cfg, result.code, pkce.CodeVerifier, redirectURI)
+		return ExchangeCodeForTokens(cfg, result.code, pkce.CodeVerifier, redirectURI)
 	case manualInput := <-manualCh:
 		if manualInput == "" {
 			return nil, fmt.Errorf("manual input cancelled")
@@ -169,7 +174,7 @@ func LoginBrowser(cfg OAuthProviderConfig) (*AuthCredential, error) {
 		if code == "" {
 			return nil, fmt.Errorf("could not find authorization code in input")
 		}
-		return exchangeCodeForTokens(cfg, code, pkce.CodeVerifier, redirectURI)
+		return ExchangeCodeForTokens(cfg, code, pkce.CodeVerifier, redirectURI)
 	case <-time.After(5 * time.Minute):
 		return nil, fmt.Errorf("authentication timed out after 5 minutes")
 	}
@@ -184,6 +189,62 @@ type deviceCodeResponse struct {
 	DeviceAuthID string
 	UserCode     string
 	Interval     int
+}
+
+// DeviceCodeInfo holds the device code information returned by the OAuth provider.
+type DeviceCodeInfo struct {
+	DeviceAuthID string `json:"device_auth_id"`
+	UserCode     string `json:"user_code"`
+	VerifyURL    string `json:"verify_url"`
+	Interval     int    `json:"interval"`
+}
+
+// RequestDeviceCode requests a device code from the OAuth provider.
+// Returns the info needed for the user to authenticate in a browser.
+func RequestDeviceCode(cfg OAuthProviderConfig) (*DeviceCodeInfo, error) {
+	reqBody, _ := json.Marshal(map[string]string{
+		"client_id": cfg.ClientID,
+	})
+
+	resp, err := http.Post(
+		cfg.Issuer+"/api/accounts/deviceauth/usercode",
+		"application/json",
+		strings.NewReader(string(reqBody)),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("requesting device code: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading device code response: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("device code request failed: %s", string(body))
+	}
+
+	deviceResp, err := parseDeviceCodeResponse(body)
+	if err != nil {
+		return nil, fmt.Errorf("parsing device code response: %w", err)
+	}
+
+	if deviceResp.Interval < 1 {
+		deviceResp.Interval = 5
+	}
+
+	return &DeviceCodeInfo{
+		DeviceAuthID: deviceResp.DeviceAuthID,
+		UserCode:     deviceResp.UserCode,
+		VerifyURL:    cfg.Issuer + "/codex/device",
+		Interval:     deviceResp.Interval,
+	}, nil
+}
+
+// PollDeviceCodeOnce makes a single poll attempt to check if the user has authenticated.
+// Returns (credential, nil) on success, (nil, nil) if still pending, or (nil, err) on failure.
+func PollDeviceCodeOnce(cfg OAuthProviderConfig, deviceAuthID, userCode string) (*AuthCredential, error) {
+	return pollDeviceCode(cfg, deviceAuthID, userCode)
 }
 
 func parseDeviceCodeResponse(body []byte) (deviceCodeResponse, error) {
@@ -246,7 +307,10 @@ func LoginDeviceCode(cfg OAuthProviderConfig) (*AuthCredential, error) {
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading device code response: %w", err)
+	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("device code request failed: %s", string(body))
 	}
@@ -306,7 +370,10 @@ func pollDeviceCode(cfg OAuthProviderConfig, deviceAuthID, userCode string) (*Au
 		return nil, fmt.Errorf("pending")
 	}
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading device token response: %w", err)
+	}
 
 	var tokenResp struct {
 		AuthorizationCode string `json:"authorization_code"`
@@ -318,7 +385,7 @@ func pollDeviceCode(cfg OAuthProviderConfig, deviceAuthID, userCode string) (*Au
 	}
 
 	redirectURI := cfg.Issuer + "/deviceauth/callback"
-	return exchangeCodeForTokens(cfg, tokenResp.AuthorizationCode, tokenResp.CodeVerifier, redirectURI)
+	return ExchangeCodeForTokens(cfg, tokenResp.AuthorizationCode, tokenResp.CodeVerifier, redirectURI)
 }
 
 func RefreshAccessToken(cred *AuthCredential, cfg OAuthProviderConfig) (*AuthCredential, error) {
@@ -347,7 +414,10 @@ func RefreshAccessToken(cred *AuthCredential, cfg OAuthProviderConfig) (*AuthCre
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading token refresh response: %w", err)
+	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("token refresh failed: %s", string(body))
 	}
@@ -410,7 +480,8 @@ func buildAuthorizeURL(cfg OAuthProviderConfig, pkce PKCECodes, state, redirectU
 	return cfg.Issuer + "/oauth/authorize?" + params.Encode()
 }
 
-func exchangeCodeForTokens(cfg OAuthProviderConfig, code, codeVerifier, redirectURI string) (*AuthCredential, error) {
+// ExchangeCodeForTokens exchanges an authorization code for tokens.
+func ExchangeCodeForTokens(cfg OAuthProviderConfig, code, codeVerifier, redirectURI string) (*AuthCredential, error) {
 	data := url.Values{
 		"grant_type":    {"authorization_code"},
 		"code":          {code},
@@ -439,12 +510,19 @@ func exchangeCodeForTokens(cfg OAuthProviderConfig, code, codeVerifier, redirect
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading token exchange response: %w", err)
+	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("token exchange failed: %s", string(body))
 	}
 
 	return parseTokenResponse(body, provider)
+}
+
+func exchangeCodeForTokens(cfg OAuthProviderConfig, code, codeVerifier, redirectURI string) (*AuthCredential, error) {
+	return ExchangeCodeForTokens(cfg, code, codeVerifier, redirectURI)
 }
 
 func parseTokenResponse(body []byte, provider string) (*AuthCredential, error) {
@@ -475,16 +553,21 @@ func parseTokenResponse(body []byte, provider string) (*AuthCredential, error) {
 		AuthMethod:   "oauth",
 	}
 
-	if accountID := extractAccountID(tokenResp.IDToken); accountID != "" {
+	if accountID := ExtractAccountID(tokenResp.IDToken); accountID != "" {
 		cred.AccountID = accountID
-	} else if accountID := extractAccountID(tokenResp.AccessToken); accountID != "" {
+	} else if accountID := ExtractAccountID(tokenResp.AccessToken); accountID != "" {
 		cred.AccountID = accountID
-	} else if accountID := extractAccountID(tokenResp.IDToken); accountID != "" {
+	} else if accountID := ExtractAccountID(tokenResp.IDToken); accountID != "" {
 		// Recent OpenAI OAuth responses may only include chatgpt_account_id in id_token claims.
 		cred.AccountID = accountID
 	}
 
 	return cred, nil
+}
+
+// ExtractAccountID extracts the OpenAI ChatGPT account id from a JWT token if present.
+func ExtractAccountID(token string) string {
+	return extractAccountID(token)
 }
 
 func extractAccountID(token string) string {
@@ -552,7 +635,8 @@ func base64URLDecode(s string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(s)
 }
 
-func openBrowser(url string) error {
+// OpenBrowser opens the provided URL using the platform default handler.
+func OpenBrowser(url string) error {
 	switch runtime.GOOS {
 	case "darwin":
 		return exec.Command("open", url).Start()
@@ -563,4 +647,8 @@ func openBrowser(url string) error {
 	default:
 		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}
+}
+
+func openBrowser(url string) error {
+	return OpenBrowser(url)
 }

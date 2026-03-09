@@ -24,6 +24,15 @@ const (
 	antigravityVersion      = "1.15.8"
 )
 
+func antigravityClientMetadataHeader() string {
+	clientMetadata, _ := json.Marshal(map[string]string{
+		"ideType":    "IDE_UNSPECIFIED",
+		"platform":   "PLATFORM_UNSPECIFIED",
+		"pluginType": "GEMINI",
+	})
+	return string(clientMetadata)
+}
+
 // AntigravityProvider implements LLMProvider using Google's Cloud Code Assist (Antigravity) API.
 // This provider authenticates via Google OAuth and provides access to models like Claude and Gemini
 // through Google's infrastructure.
@@ -97,17 +106,12 @@ func (p *AntigravityProvider) Chat(
 	}
 
 	// Headers matching the pi-ai SDK antigravity format
-	clientMetadata, _ := json.Marshal(map[string]string{
-		"ideType":    "IDE_UNSPECIFIED",
-		"platform":   "PLATFORM_UNSPECIFIED",
-		"pluginType": "GEMINI",
-	})
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "text/event-stream")
 	req.Header.Set("User-Agent", fmt.Sprintf("antigravity/%s linux/amd64", antigravityVersion))
 	req.Header.Set("X-Goog-Api-Client", antigravityXGoogClient)
-	req.Header.Set("Client-Metadata", string(clientMetadata))
+	req.Header.Set("Client-Metadata", antigravityClientMetadataHeader())
 
 	resp, err := p.httpClient.Do(req)
 	if err != nil {
@@ -690,6 +694,7 @@ func FetchAntigravityProjectID(accessToken string) (string, error) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", antigravityUserAgent)
 	req.Header.Set("X-Goog-Api-Client", antigravityXGoogClient)
+	req.Header.Set("Client-Metadata", antigravityClientMetadataHeader())
 
 	client := &http.Client{Timeout: 15 * time.Second}
 	resp, err := client.Do(req)
@@ -698,7 +703,10 @@ func FetchAntigravityProjectID(accessToken string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("reading loadCodeAssist response: %w", err)
+	}
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("loadCodeAssist failed: %s", string(body))
 	}
@@ -731,6 +739,7 @@ func FetchAntigravityModels(accessToken, projectID string) ([]AntigravityModelIn
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", antigravityUserAgent)
 	req.Header.Set("X-Goog-Api-Client", antigravityXGoogClient)
+	req.Header.Set("Client-Metadata", antigravityClientMetadataHeader())
 
 	client := &http.Client{Timeout: 15 * time.Second}
 	resp, err := client.Do(req)
@@ -739,7 +748,10 @@ func FetchAntigravityModels(accessToken, projectID string) ([]AntigravityModelIn
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading fetchAvailableModels response: %w", err)
+	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf(
 			"fetchAvailableModels failed (HTTP %d): %s",

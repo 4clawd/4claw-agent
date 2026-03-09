@@ -1,6 +1,7 @@
 package providers
 
 import (
+	"encoding/base64"
 	"os"
 	"path/filepath"
 	"testing"
@@ -129,6 +130,58 @@ func TestReadCodexCliCredentials_CodexHomeEnv(t *testing.T) {
 	}
 	if token != "custom-token" {
 		t.Errorf("token = %q, want %q", token, "custom-token")
+	}
+}
+
+func TestReadCodexCliCredentials_TopLevelAccessToken(t *testing.T) {
+	tmpDir := t.TempDir()
+	authPath := filepath.Join(tmpDir, "auth.json")
+
+	authJSON := `{"access_token":"top-level-token","account_id":"top-level-account"}`
+	if err := os.WriteFile(authPath, []byte(authJSON), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	t.Setenv("CODEX_HOME", tmpDir)
+
+	token, accountID, _, err := ReadCodexCliCredentials()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if token != "top-level-token" {
+		t.Errorf("token = %q, want %q", token, "top-level-token")
+	}
+	if accountID != "top-level-account" {
+		t.Errorf("accountID = %q, want %q", accountID, "top-level-account")
+	}
+}
+
+func TestReadCodexCliCredentials_ExtractsAccountIDFromJWT(t *testing.T) {
+	tmpDir := t.TempDir()
+	authPath := filepath.Join(tmpDir, "auth.json")
+
+	header := base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"none","typ":"JWT"}`))
+	payload := base64.RawURLEncoding.EncodeToString(
+		[]byte(`{"https://api.openai.com/auth":{"chatgpt_account_id":"jwt-account"}}`),
+	)
+	accessToken := header + "." + payload + ".sig"
+
+	authJSON := `{"tokens":{"access_token":"` + accessToken + `"}}`
+	if err := os.WriteFile(authPath, []byte(authJSON), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	t.Setenv("CODEX_HOME", tmpDir)
+
+	token, accountID, _, err := ReadCodexCliCredentials()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if token != accessToken {
+		t.Errorf("token = %q, want %q", token, accessToken)
+	}
+	if accountID != "jwt-account" {
+		t.Errorf("accountID = %q, want %q", accountID, "jwt-account")
 	}
 }
 

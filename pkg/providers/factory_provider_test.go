@@ -6,6 +6,8 @@
 package providers
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/4claw/4claw/pkg/config"
@@ -201,6 +203,45 @@ func TestCreateProviderFromConfig_CodexCLI(t *testing.T) {
 	}
 	if modelID != "codex" {
 		t.Errorf("modelID = %q, want %q", modelID, "codex")
+	}
+}
+
+func TestCreateProviderFromConfig_OpenAIOAuthFallsBackToCodexCLIAuth(t *testing.T) {
+	tmpHome := t.TempDir()
+	codexHome := filepath.Join(tmpHome, "codex-home")
+	if err := os.MkdirAll(codexHome, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	authJSON := `{"tokens":{"access_token":"codex-token","account_id":"codex-account"}}`
+	if err := os.WriteFile(filepath.Join(codexHome, "auth.json"), []byte(authJSON), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	t.Setenv("CODEX_HOME", codexHome)
+	t.Setenv("HOME", tmpHome)
+	t.Setenv("USERPROFILE", tmpHome)
+	t.Setenv("HOMEDRIVE", "")
+	t.Setenv("HOMEPATH", "")
+
+	cfg := &config.ModelConfig{
+		ModelName:  "test-openai-oauth",
+		Model:      "openai/gpt-5.2",
+		AuthMethod: "oauth",
+	}
+
+	provider, modelID, err := CreateProviderFromConfig(cfg)
+	if err != nil {
+		t.Fatalf("CreateProviderFromConfig() error = %v", err)
+	}
+	if provider == nil {
+		t.Fatal("CreateProviderFromConfig() returned nil provider")
+	}
+	if _, ok := provider.(*CodexProvider); !ok {
+		t.Fatalf("expected *CodexProvider, got %T", provider)
+	}
+	if modelID != "gpt-5.2" {
+		t.Errorf("modelID = %q, want %q", modelID, "gpt-5.2")
 	}
 }
 

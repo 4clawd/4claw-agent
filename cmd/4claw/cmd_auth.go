@@ -107,6 +107,10 @@ func authLoginOpenAI(useDeviceCode bool) {
 		cred, err = auth.LoginDeviceCode(cfg)
 	} else {
 		cred, err = auth.LoginBrowser(cfg)
+		if err != nil {
+			fmt.Printf("Browser OAuth failed, falling back to device code: %v\n", err)
+			cred, err = auth.LoginDeviceCode(cfg)
+		}
 	}
 
 	if err != nil {

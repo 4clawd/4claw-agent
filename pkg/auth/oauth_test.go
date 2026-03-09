@@ -373,3 +373,52 @@ func TestParseDeviceCodeResponseInvalidInterval(t *testing.T) {
 		t.Fatal("expected error for invalid interval")
 	}
 }
+
+func TestExtractAccountIDExportedWrapper(t *testing.T) {
+	token := makeJWTForClaims(t, map[string]any{
+		"https://api.openai.com/auth": map[string]any{
+			"chatgpt_account_id": "wrapped-account",
+		},
+	})
+
+	if got := ExtractAccountID(token); got != "wrapped-account" {
+		t.Fatalf("ExtractAccountID() = %q, want %q", got, "wrapped-account")
+	}
+}
+
+func TestRequestDeviceCode(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/accounts/deviceauth/usercode" {
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+		json.NewEncoder(w).Encode(map[string]any{
+			"device_auth_id": "device-auth-id",
+			"user_code":      "ABCD-EFGH",
+			"interval":       "7",
+		})
+	}))
+	defer server.Close()
+
+	cfg := OAuthProviderConfig{
+		Issuer:   server.URL,
+		ClientID: "test-client",
+	}
+
+	info, err := RequestDeviceCode(cfg)
+	if err != nil {
+		t.Fatalf("RequestDeviceCode() error: %v", err)
+	}
+	if info.DeviceAuthID != "device-auth-id" {
+		t.Errorf("DeviceAuthID = %q, want %q", info.DeviceAuthID, "device-auth-id")
+	}
+	if info.UserCode != "ABCD-EFGH" {
+		t.Errorf("UserCode = %q, want %q", info.UserCode, "ABCD-EFGH")
+	}
+	if info.VerifyURL != server.URL+"/codex/device" {
+		t.Errorf("VerifyURL = %q, want %q", info.VerifyURL, server.URL+"/codex/device")
+	}
+	if info.Interval != 7 {
+		t.Errorf("Interval = %d, want %d", info.Interval, 7)
+	}
+}

@@ -6,19 +6,25 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/4claw/4claw/pkg/auth"
 )
 
 // CodexCliAuth represents the ~/.codex/auth.json file structure.
 type CodexCliAuth struct {
+	AccessToken string `json:"access_token"`
+	AccountID   string `json:"account_id"`
+	IDToken     string `json:"id_token"`
 	Tokens struct {
 		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`
 		AccountID    string `json:"account_id"`
+		IDToken      string `json:"id_token"`
 	} `json:"tokens"`
 }
 
-// ReadCodexCliCredentials reads OAuth tokens from the Codex CLI's auth.json file.
-// Expiry is estimated as file modification time + 1 hour (same approach as moltbot).
+// ReadCodexCliCredentials reads OAuth tokens from the Codex CLI auth file.
+// Expiry is estimated as file modification time + 1 hour, matching picoclaw-clone.
 func ReadCodexCliCredentials() (accessToken, accountID string, expiresAt time.Time, err error) {
 	authPath, err := resolveCodexAuthPath()
 	if err != nil {
@@ -30,13 +36,24 @@ func ReadCodexCliCredentials() (accessToken, accountID string, expiresAt time.Ti
 		return "", "", time.Time{}, fmt.Errorf("reading %s: %w", authPath, err)
 	}
 
-	var auth CodexCliAuth
-	if err = json.Unmarshal(data, &auth); err != nil {
+	var authFile CodexCliAuth
+	if err = json.Unmarshal(data, &authFile); err != nil {
 		return "", "", time.Time{}, fmt.Errorf("parsing %s: %w", authPath, err)
 	}
 
-	if auth.Tokens.AccessToken == "" {
+	accessToken = authFile.Tokens.AccessToken
+	if accessToken == "" {
+		accessToken = authFile.AccessToken
+	}
+	if accessToken == "" {
 		return "", "", time.Time{}, fmt.Errorf("no access_token in %s", authPath)
+	}
+	accountID = authFile.Tokens.AccountID
+	if accountID == "" {
+		accountID = authFile.AccountID
+	}
+	if accountID == "" {
+		accountID = resolveCodexAccountID(authFile)
 	}
 
 	stat, err := os.Stat(authPath)
@@ -46,11 +63,10 @@ func ReadCodexCliCredentials() (accessToken, accountID string, expiresAt time.Ti
 		expiresAt = stat.ModTime().Add(time.Hour)
 	}
 
-	return auth.Tokens.AccessToken, auth.Tokens.AccountID, expiresAt, nil
+	return accessToken, accountID, expiresAt, nil
 }
 
-// CreateCodexCliTokenSource creates a token source that reads from ~/.codex/auth.json.
-// This allows the existing CodexProvider to reuse Codex CLI credentials.
+// CreateCodexCliTokenSource reuses Codex CLI OAuth credentials from ~/.codex/auth.json.
 func CreateCodexCliTokenSource() func() (string, string, error) {
 	return func() (string, string, error) {
 		token, accountID, expiresAt, err := ReadCodexCliCredentials()
@@ -59,9 +75,7 @@ func CreateCodexCliTokenSource() func() (string, string, error) {
 		}
 
 		if time.Now().After(expiresAt) {
-			return "", "", fmt.Errorf(
-				"codex cli credentials expired (auth.json last modified > 1h ago). Run: codex login",
-			)
+			return "", "", fmt.Errorf("codex cli credentials expired (auth.json last modified > 1h ago). Run: codex login")
 		}
 
 		return token, accountID, nil
@@ -78,4 +92,26 @@ func resolveCodexAuthPath() (string, error) {
 		codexHome = filepath.Join(home, ".codex")
 	}
 	return filepath.Join(codexHome, "auth.json"), nil
+}
+
+func resolveCodexAccountID(authFile CodexCliAuth) string {
+	if authFile.Tokens.AccountID != "" {
+		return authFile.Tokens.AccountID
+	}
+	if authFile.AccountID != "" {
+		return authFile.AccountID
+	}
+	if accountID := auth.ExtractAccountID(authFile.Tokens.IDToken); accountID != "" {
+		return accountID
+	}
+	if accountID := auth.ExtractAccountID(authFile.Tokens.AccessToken); accountID != "" {
+		return accountID
+	}
+	if accountID := auth.ExtractAccountID(authFile.IDToken); accountID != "" {
+		return accountID
+	}
+	if accountID := auth.ExtractAccountID(authFile.AccessToken); accountID != "" {
+		return accountID
+	}
+	return ""
 }

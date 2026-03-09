@@ -80,6 +80,8 @@ func (p *CodexProvider) Chat(
 		opts = append(opts, option.WithAPIKey(tok))
 		if accID != "" {
 			accountID = accID
+		} else if recovered := auth.ExtractAccountID(tok); recovered != "" {
+			accountID = recovered
 		}
 	}
 	if accountID != "" {
@@ -406,7 +408,17 @@ func createCodexTokenSource() func() (string, string, error) {
 			return "", "", fmt.Errorf("loading auth credentials: %w", err)
 		}
 		if cred == nil {
+			if fallback := CreateCodexCliTokenSource(); fallback != nil {
+				if token, accountID, cliErr := fallback(); cliErr == nil && token != "" {
+					return token, accountID, nil
+				}
+			}
 			return "", "", fmt.Errorf("no credentials for openai. Run: 4claw auth login --provider openai")
+		}
+		if cred.AccountID == "" {
+			if recovered := auth.ExtractAccountID(cred.AccessToken); recovered != "" {
+				cred.AccountID = recovered
+			}
 		}
 
 		if cred.AuthMethod == "oauth" && cred.NeedsRefresh() && cred.RefreshToken != "" {
@@ -418,10 +430,30 @@ func createCodexTokenSource() func() (string, string, error) {
 			if refreshed.AccountID == "" {
 				refreshed.AccountID = cred.AccountID
 			}
+			if refreshed.AccountID == "" {
+				if recovered := auth.ExtractAccountID(refreshed.AccessToken); recovered != "" {
+					refreshed.AccountID = recovered
+				}
+			}
 			if err := auth.SetCredential("openai", refreshed); err != nil {
 				return "", "", fmt.Errorf("saving refreshed token: %w", err)
 			}
+			if refreshed.AccountID == "" {
+				if fallback := CreateCodexCliTokenSource(); fallback != nil {
+					if token, accountID, cliErr := fallback(); cliErr == nil && token != "" && accountID != "" {
+						return token, accountID, nil
+					}
+				}
+			}
 			return refreshed.AccessToken, refreshed.AccountID, nil
+		}
+
+		if cred.AccountID == "" {
+			if fallback := CreateCodexCliTokenSource(); fallback != nil {
+				if token, accountID, cliErr := fallback(); cliErr == nil && token != "" && accountID != "" {
+					return token, accountID, nil
+				}
+			}
 		}
 
 		return cred.AccessToken, cred.AccountID, nil
