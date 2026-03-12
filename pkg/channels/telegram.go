@@ -221,20 +221,6 @@ func (c *TelegramChannel) handleMessage(ctx context.Context, message *telego.Mes
 
 	content := ""
 	mediaPaths := []string{}
-	localFiles := []string{} // track local files that need cleanup
-
-	// ensure temp files are cleaned up when function returns
-	defer func() {
-		for _, file := range localFiles {
-			if err := os.Remove(file); err != nil {
-				logger.DebugCF("telegram", "Failed to cleanup temp file", map[string]any{
-					"file":  file,
-					"error": err.Error(),
-				})
-			}
-		}
-	}()
-
 	if message.Text != "" {
 		content += message.Text
 	}
@@ -250,7 +236,6 @@ func (c *TelegramChannel) handleMessage(ctx context.Context, message *telego.Mes
 		photo := message.Photo[len(message.Photo)-1]
 		photoPath := c.downloadPhoto(ctx, photo.FileID)
 		if photoPath != "" {
-			localFiles = append(localFiles, photoPath)
 			mediaPaths = append(mediaPaths, photoPath)
 			if content != "" {
 				content += "\n"
@@ -262,7 +247,6 @@ func (c *TelegramChannel) handleMessage(ctx context.Context, message *telego.Mes
 	if message.Voice != nil {
 		voicePath := c.downloadFile(ctx, message.Voice.FileID, ".ogg")
 		if voicePath != "" {
-			localFiles = append(localFiles, voicePath)
 			mediaPaths = append(mediaPaths, voicePath)
 
 			transcribedText := ""
@@ -297,7 +281,6 @@ func (c *TelegramChannel) handleMessage(ctx context.Context, message *telego.Mes
 	if message.Audio != nil {
 		audioPath := c.downloadFile(ctx, message.Audio.FileID, ".mp3")
 		if audioPath != "" {
-			localFiles = append(localFiles, audioPath)
 			mediaPaths = append(mediaPaths, audioPath)
 			if content != "" {
 				content += "\n"
@@ -309,12 +292,33 @@ func (c *TelegramChannel) handleMessage(ctx context.Context, message *telego.Mes
 	if message.Document != nil {
 		docPath := c.downloadFile(ctx, message.Document.FileID, "")
 		if docPath != "" {
-			localFiles = append(localFiles, docPath)
 			mediaPaths = append(mediaPaths, docPath)
 			if content != "" {
 				content += "\n"
 			}
 			content += "[file]"
+		}
+	}
+
+	if message.Video != nil {
+		videoPath := c.downloadFile(ctx, message.Video.FileID, ".mp4")
+		if videoPath != "" {
+			mediaPaths = append(mediaPaths, videoPath)
+			if content != "" {
+				content += "\n"
+			}
+			content += "[video]"
+		}
+	}
+
+	if message.Animation != nil {
+		animationPath := c.downloadFile(ctx, message.Animation.FileID, ".mp4")
+		if animationPath != "" {
+			mediaPaths = append(mediaPaths, animationPath)
+			if content != "" {
+				content += "\n"
+			}
+			content += "[animation]"
 		}
 	}
 

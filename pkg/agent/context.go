@@ -167,6 +167,7 @@ func (cb *ContextBuilder) BuildMessages(
 	channel, chatID string,
 ) []providers.Message {
 	messages := []providers.Message{}
+	currentMessage = cb.decorateMessageWithMedia(currentMessage, media)
 
 	systemPrompt := cb.BuildSystemPrompt()
 
@@ -214,6 +215,32 @@ func (cb *ContextBuilder) BuildMessages(
 	}
 
 	return messages
+}
+
+func (cb *ContextBuilder) decorateMessageWithMedia(currentMessage string, media []string) string {
+	if len(media) == 0 {
+		return currentMessage
+	}
+
+	var sb strings.Builder
+	if strings.TrimSpace(currentMessage) != "" {
+		sb.WriteString(currentMessage)
+		sb.WriteString("\n\n")
+	}
+
+	sb.WriteString("[Attached local files]\n")
+	sb.WriteString("The user message included local files that have already been downloaded to disk.\n")
+	sb.WriteString("Use available tools to inspect them when needed.\n")
+	for _, mediaPath := range media {
+		if strings.TrimSpace(mediaPath) == "" {
+			continue
+		}
+		sb.WriteString("- ")
+		sb.WriteString(mediaPath)
+		sb.WriteString("\n")
+	}
+
+	return strings.TrimSpace(sb.String())
 }
 
 func sanitizeHistoryForProvider(history []providers.Message) []providers.Message {

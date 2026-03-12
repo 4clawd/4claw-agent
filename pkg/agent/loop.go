@@ -46,6 +46,7 @@ type processOptions struct {
 	Channel         string // Target channel for tool execution
 	ChatID          string // Target chat ID for tool execution
 	UserMessage     string // User message content (may include prefix)
+	Media           []string
 	DefaultResponse string // Response when LLM returns empty
 	EnableSummary   bool   // Whether to trigger summarization
 	SendResponse    bool   // Whether to send response via bus
@@ -328,6 +329,7 @@ func (al *AgentLoop) processMessage(ctx context.Context, msg bus.InboundMessage)
 		Channel:         msg.Channel,
 		ChatID:          msg.ChatID,
 		UserMessage:     msg.Content,
+		Media:           msg.Media,
 		DefaultResponse: "I've completed processing but have no response to give.",
 		EnableSummary:   true,
 		SendResponse:    false,
@@ -417,13 +419,15 @@ func (al *AgentLoop) runAgentLoop(ctx context.Context, agent *AgentInstance, opt
 		history,
 		summary,
 		opts.UserMessage,
-		nil,
+		opts.Media,
 		opts.Channel,
 		opts.ChatID,
 	)
 
+	userMessageForSession := agent.ContextBuilder.decorateMessageWithMedia(opts.UserMessage, opts.Media)
+
 	// 3. Save user message to session
-	agent.Sessions.AddMessage(opts.SessionKey, "user", opts.UserMessage)
+	agent.Sessions.AddMessage(opts.SessionKey, "user", userMessageForSession)
 
 	// 4. Run LLM iteration loop
 	finalContent, iteration, err := al.runLLMIteration(ctx, agent, messages, opts)
