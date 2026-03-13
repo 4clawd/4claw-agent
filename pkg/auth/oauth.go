@@ -133,7 +133,9 @@ func LoginBrowser(cfg OAuthProviderConfig) (*AuthCredential, error) {
 
 	fmt.Printf("Open this URL to authenticate:\n\n%s\n\n", authURL)
 
-	if err := OpenBrowser(authURL); err != nil {
+	if browserLaunchDisabled() {
+		fmt.Println("Automatic browser launch disabled for this session.")
+	} else if err := OpenBrowser(authURL); err != nil {
 		fmt.Printf("Could not open browser automatically.\nPlease open this URL manually:\n\n%s\n\n", authURL)
 	}
 
@@ -648,6 +650,11 @@ func OpenBrowser(url string) error {
 	default:
 		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}
+}
+
+func browserLaunchDisabled() bool {
+	value := strings.ToLower(strings.TrimSpace(os.Getenv("FOURCLAW_NO_BROWSER")))
+	return value == "1" || value == "true" || value == "yes"
 }
 
 func openBrowserWindows(targetURL string) error {
