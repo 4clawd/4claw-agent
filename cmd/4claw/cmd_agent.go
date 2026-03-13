@@ -25,6 +25,7 @@ func agentCmd() {
 	sessionKey := "cli:default"
 	modelOverride := ""
 	configPath := ""
+	forceSimpleIO := false
 
 	args := os.Args[2:]
 	for i := 0; i < len(args); i++ {
@@ -56,6 +57,8 @@ func agentCmd() {
 				modelOverride = args[i+1]
 				i++
 			}
+		case "--pipe-mode", "--simple-io":
+			forceSimpleIO = true
 		}
 	}
 
@@ -101,7 +104,7 @@ func agentCmd() {
 		fmt.Printf("\n%s %s\n", logo, response)
 	} else {
 		fmt.Printf("%s Interactive mode (Ctrl+C to exit)\n\n", logo)
-		if shouldUseSimpleInteractiveMode() {
+		if forceSimpleIO || shouldUseSimpleInteractiveMode() {
 			simpleInteractiveMode(agentLoop, sessionKey)
 			return
 		}
