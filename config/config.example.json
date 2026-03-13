@@ -24,7 +24,7 @@
     },
     {
       "model_name": "gemini",
-      "model": "antigravity/gemini-2.0-flash",
+      "model": "antigravity/gemini-3-flash",
       "auth_method": "oauth"
     },
     {

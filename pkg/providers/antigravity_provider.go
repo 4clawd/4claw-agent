@@ -97,7 +97,7 @@ func (p *AntigravityProvider) Chat(
 		return nil, fmt.Errorf("marshaling request: %w", err)
 	}
 
-	// Build API URL 閳?uses Cloud Code Assist v1internal streaming endpoint
+	// Build API URL using the Cloud Code Assist v1internal streaming endpoint.
 	apiURL := fmt.Sprintf("%s/v1internal:streamGenerateContent?alt=sse", antigravityBaseURL)
 
 	req, err := http.NewRequestWithContext(ctx, "POST", apiURL, bytes.NewReader(bodyBytes))
@@ -134,9 +134,8 @@ func (p *AntigravityProvider) Chat(
 		return nil, p.parseAntigravityError(resp.StatusCode, respBody)
 	}
 
-	// Response is always SSE from streamGenerateContent 閳?each line is "data: {...}"
-	// with a "response" wrapper containing the standard Gemini response
-	llmResp, err := p.parseSSEResponse(string(respBody))
+	// Antigravity normally returns SSE, but some responses come back as plain JSON.
+	llmResp, err := p.parseResponse(respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -464,6 +463,39 @@ func (p *AntigravityProvider) parseJSONResponse(body []byte) (*LLMResponse, erro
 		FinishReason: finishReason,
 		Usage:        usage,
 	}, nil
+}
+
+func (p *AntigravityProvider) parseResponse(body []byte) (*LLMResponse, error) {
+	trimmed := bytes.TrimSpace(body)
+	if len(trimmed) == 0 {
+		return nil, fmt.Errorf("antigravity: empty response body")
+	}
+
+	if bytes.Contains(trimmed, []byte("data: ")) {
+		resp, err := p.parseSSEResponse(string(trimmed))
+		if err == nil && (resp.Content != "" || len(resp.ToolCalls) > 0) {
+			return resp, nil
+		}
+
+		jsonResp, jsonErr := p.parseJSONResponse(trimmed)
+		if jsonErr == nil {
+			logger.WarnCF("provider.antigravity", "Falling back to JSON response parsing", map[string]any{
+				"sse_error": errString(err),
+			})
+			return jsonResp, nil
+		}
+
+		return nil, fmt.Errorf("parsing antigravity response: sse=%v json=%v", err, jsonErr)
+	}
+
+	return p.parseJSONResponse(trimmed)
+}
+
+func errString(err error) string {
+	if err == nil {
+		return ""
+	}
+	return err.Error()
 }
 
 func (p *AntigravityProvider) parseSSEResponse(body string) (*LLMResponse, error) {
