@@ -136,7 +136,7 @@ func (c *FeishuChannel) handleMessageReceive(_ context.Context, event *larkim.P2
 	message := event.Event.Message
 	sender := event.Event.Sender
 
-	chatID := stringValue(message.ChatId)
+	chatID := stringPtrValue(message.ChatId)
 	if chatID == "" {
 		return nil
 	}
@@ -152,20 +152,20 @@ func (c *FeishuChannel) handleMessageReceive(_ context.Context, event *larkim.P2
 	}
 
 	metadata := map[string]string{}
-	if messageID := stringValue(message.MessageId); messageID != "" {
+	if messageID := stringPtrValue(message.MessageId); messageID != "" {
 		metadata["message_id"] = messageID
 	}
-	if messageType := stringValue(message.MessageType); messageType != "" {
+	if messageType := stringPtrValue(message.MessageType); messageType != "" {
 		metadata["message_type"] = messageType
 	}
-	if chatType := stringValue(message.ChatType); chatType != "" {
+	if chatType := stringPtrValue(message.ChatType); chatType != "" {
 		metadata["chat_type"] = chatType
 	}
 	if sender != nil && sender.TenantKey != nil {
 		metadata["tenant_key"] = *sender.TenantKey
 	}
 
-	chatType := stringValue(message.ChatType)
+	chatType := stringPtrValue(message.ChatType)
 	if chatType == "p2p" {
 		metadata["peer_kind"] = "direct"
 		metadata["peer_id"] = senderID
@@ -219,7 +219,7 @@ func extractFeishuMessageContent(message *larkim.EventMessage) string {
 	return *message.Content
 }
 
-func stringValue(v *string) string {
+func stringPtrValue(v *string) string {
 	if v == nil {
 		return ""
 	}
