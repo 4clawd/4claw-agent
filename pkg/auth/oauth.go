@@ -90,8 +90,13 @@ func LoginBrowser(cfg OAuthProviderConfig) (*AuthCredential, error) {
 		return nil, fmt.Errorf("generating state: %w", err)
 	}
 
-	redirectURI := fmt.Sprintf("http://localhost:%d/auth/callback", cfg.Port)
+	listener, actualPort, err := startOAuthCallbackListener(cfg)
+	if err != nil {
+		return nil, err
+	}
+	defer listener.Close()
 
+	redirectURI := fmt.Sprintf("http://localhost:%d/auth/callback", actualPort)
 	authURL := buildAuthorizeURL(cfg, pkce, state, redirectURI)
 
 	resultCh := make(chan callbackResult, 1)
@@ -117,11 +122,6 @@ func LoginBrowser(cfg OAuthProviderConfig) (*AuthCredential, error) {
 		resultCh <- callbackResult{code: code}
 	})
 
-	listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", cfg.Port))
-	if err != nil {
-		return nil, fmt.Errorf("starting callback server on port %d: %w", cfg.Port, err)
-	}
-
 	server := &http.Server{Handler: mux}
 	go server.Serve(listener)
 	defer func() {
@@ -138,7 +138,7 @@ func LoginBrowser(cfg OAuthProviderConfig) (*AuthCredential, error) {
 
 	fmt.Printf(
 		"Wait! If you are in a headless environment (like Coolify/VPS) and cannot reach localhost:%d,\n",
-		cfg.Port,
+		actualPort,
 	)
 	fmt.Println(
 		"please complete the login in your local browser and then PASTE the final redirect URL (or just the code) here.",
@@ -647,6 +647,62 @@ func OpenBrowser(url string) error {
 	default:
 		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}
+}
+
+func startOAuthCallbackListener(cfg OAuthProviderConfig) (net.Listener, int, error) {
+	listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", cfg.Port))
+	if err == nil {
+		return listener, cfg.Port, nil
+	}
+
+	if !supportsDynamicLoopbackPort(cfg) || !isAddrInUseError(err) {
+		return nil, 0, fmt.Errorf("starting callback server on port %d: %w", cfg.Port, err)
+	}
+
+	fallback, fallbackErr := net.Listen("tcp", "127.0.0.1:0")
+	if fallbackErr != nil {
+		return nil, 0, fmt.Errorf(
+			"starting callback server on port %d: %w; fallback to random localhost port failed: %v",
+			cfg.Port,
+			err,
+			fallbackErr,
+		)
+	}
+
+	actualPort := 0
+	if tcpAddr, ok := fallback.Addr().(*net.TCPAddr); ok {
+		actualPort = tcpAddr.Port
+	}
+	if actualPort == 0 {
+		_ = fallback.Close()
+		return nil, 0, fmt.Errorf("allocated fallback callback listener without a valid TCP port")
+	}
+
+	fmt.Printf(
+		"Port %d is already in use, falling back to localhost:%d for OAuth callback.\n",
+		cfg.Port,
+		actualPort,
+	)
+	return fallback, actualPort, nil
+}
+
+func supportsDynamicLoopbackPort(cfg OAuthProviderConfig) bool {
+	issuer := strings.ToLower(strings.TrimSpace(cfg.Issuer))
+	tokenURL := strings.ToLower(strings.TrimSpace(cfg.TokenURL))
+	if strings.Contains(issuer, "accounts.google.com") || strings.Contains(tokenURL, "googleapis.com") {
+		return true
+	}
+	return false
+}
+
+func isAddrInUseError(err error) bool {
+	if err == nil {
+		return false
+	}
+	msg := strings.ToLower(err.Error())
+	return strings.Contains(msg, "address already in use") ||
+		strings.Contains(msg, "only one usage of each socket address") ||
+		strings.Contains(msg, "bind: an attempt was made to access a socket")
 }
 
 func openBrowser(url string) error {
