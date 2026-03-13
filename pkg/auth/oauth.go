@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"net"
 	"net/http"
@@ -643,10 +644,59 @@ func OpenBrowser(url string) error {
 	case "linux":
 		return exec.Command("xdg-open", url).Start()
 	case "windows":
-		return exec.Command("rundll32.exe", "url.dll,FileProtocolHandler", url).Start()
+		return openBrowserWindows(url)
 	default:
 		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}
+}
+
+func openBrowserWindows(targetURL string) error {
+	if targetURL == "" {
+		return fmt.Errorf("empty url")
+	}
+
+	lower := strings.ToLower(strings.TrimSpace(targetURL))
+	if strings.HasPrefix(lower, "http://") || strings.HasPrefix(lower, "https://") {
+		redirectFile, err := createWindowsOAuthRedirectFile(targetURL)
+		if err != nil {
+			return err
+		}
+		return exec.Command("explorer.exe", redirectFile).Start()
+	}
+
+	return exec.Command("explorer.exe", targetURL).Start()
+}
+
+func createWindowsOAuthRedirectFile(targetURL string) (string, error) {
+	escapedURL := html.EscapeString(targetURL)
+	htmlContent := fmt.Sprintf(`<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0;url=%[1]s">
+  <title>4claw OAuth Redirect</title>
+</head>
+<body>
+  <p>Redirecting to OAuth login...</p>
+  <p>If it does not open automatically, <a href="%[1]s">continue here</a>.</p>
+  <script>
+    window.location.replace(%[2]s);
+  </script>
+</body>
+</html>
+`, escapedURL, strconv.Quote(targetURL))
+
+	file, err := os.CreateTemp("", "4claw-oauth-redirect-*.html")
+	if err != nil {
+		return "", fmt.Errorf("creating Windows OAuth redirect file: %w", err)
+	}
+	defer file.Close()
+
+	if _, err := file.WriteString(htmlContent); err != nil {
+		return "", fmt.Errorf("writing Windows OAuth redirect file: %w", err)
+	}
+
+	return file.Name(), nil
 }
 
 func startOAuthCallbackListener(cfg OAuthProviderConfig) (net.Listener, int, error) {
