@@ -101,8 +101,27 @@ func agentCmd() {
 		fmt.Printf("\n%s %s\n", logo, response)
 	} else {
 		fmt.Printf("%s Interactive mode (Ctrl+C to exit)\n\n", logo)
+		if shouldUseSimpleInteractiveMode() {
+			simpleInteractiveMode(agentLoop, sessionKey)
+			return
+		}
 		interactiveMode(agentLoop, sessionKey)
 	}
+}
+
+func shouldUseSimpleInteractiveMode() bool {
+	stdinInfo, stdinErr := os.Stdin.Stat()
+	stdoutInfo, stdoutErr := os.Stdout.Stat()
+	if stdinErr != nil || stdoutErr != nil {
+		return true
+	}
+	if stdinInfo.Mode()&os.ModeCharDevice == 0 {
+		return true
+	}
+	if stdoutInfo.Mode()&os.ModeCharDevice == 0 {
+		return true
+	}
+	return false
 }
 
 func interactiveMode(agentLoop *agent.AgentLoop, sessionKey string) {
