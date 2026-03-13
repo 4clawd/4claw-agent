@@ -673,7 +673,6 @@ func createWindowsOAuthRedirectFile(targetURL string) (string, error) {
 <html>
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="0;url=%[1]s">
   <title>4claw OAuth Redirect</title>
 </head>
 <body>
