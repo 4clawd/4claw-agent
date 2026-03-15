@@ -207,7 +207,7 @@ func buildCodexParams(
 	var inputItems responses.ResponseInputParam
 	var instructions string
 
-	for _, msg := range messages {
+	for _, msg := range sanitizeCodexHistory(messages) {
 		switch msg.Role {
 		case "system":
 			instructions = msg.Content
@@ -296,6 +296,80 @@ func buildCodexParams(
 	}
 
 	return params
+}
+
+func sanitizeCodexHistory(messages []Message) []Message {
+	if len(messages) == 0 {
+		return nil
+	}
+
+	outputIDs := make(map[string]struct{})
+	for _, msg := range messages {
+		if (msg.Role == "tool" || msg.Role == "user") && msg.ToolCallID != "" {
+			outputIDs[msg.ToolCallID] = struct{}{}
+		}
+	}
+
+	allowedCallIDs := make(map[string]struct{})
+	sanitized := make([]Message, 0, len(messages))
+	droppedCalls := 0
+	droppedOutputs := 0
+
+	for _, msg := range messages {
+		switch msg.Role {
+		case "assistant":
+			if len(msg.ToolCalls) == 0 {
+				sanitized = append(sanitized, msg)
+				continue
+			}
+
+			filteredCalls := make([]ToolCall, 0, len(msg.ToolCalls))
+			for _, tc := range msg.ToolCalls {
+				if tc.ID == "" {
+					droppedCalls++
+					continue
+				}
+				if _, ok := outputIDs[tc.ID]; !ok {
+					droppedCalls++
+					continue
+				}
+				filteredCalls = append(filteredCalls, tc)
+				allowedCallIDs[tc.ID] = struct{}{}
+			}
+
+			if len(filteredCalls) == 0 {
+				if msg.Content != "" {
+					msg.ToolCalls = nil
+					sanitized = append(sanitized, msg)
+				}
+				continue
+			}
+
+			msg.ToolCalls = filteredCalls
+			sanitized = append(sanitized, msg)
+		case "tool", "user":
+			if msg.ToolCallID != "" {
+				if _, ok := allowedCallIDs[msg.ToolCallID]; !ok {
+					droppedOutputs++
+					continue
+				}
+			}
+			sanitized = append(sanitized, msg)
+		default:
+			sanitized = append(sanitized, msg)
+		}
+	}
+
+	if droppedCalls > 0 || droppedOutputs > 0 {
+		logger.WarnCF("provider.codex", "Sanitized unmatched tool call history before Codex request", map[string]any{
+			"dropped_calls":   droppedCalls,
+			"dropped_outputs": droppedOutputs,
+			"messages_before": len(messages),
+			"messages_after":  len(sanitized),
+		})
+	}
+
+	return sanitized
 }
 
 func resolveCodexToolCall(tc ToolCall) (name string, arguments string, ok bool) {

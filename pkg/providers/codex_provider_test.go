@@ -107,6 +107,73 @@ func TestBuildCodexParams_ToolCallFunctionFallback(t *testing.T) {
 	}
 }
 
+func TestBuildCodexParams_DropsAssistantToolCallWithoutOutput(t *testing.T) {
+	messages := []Message{
+		{Role: "user", Content: "inspect workspace"},
+		{
+			Role:    "assistant",
+			Content: "I'll inspect the workspace.",
+			ToolCalls: []ToolCall{
+				{ID: "call_missing", Name: "list_dir", Arguments: map[string]any{"path": "."}},
+			},
+		},
+		{Role: "assistant", Content: "No output was recorded for the previous tool call."},
+	}
+
+	params := buildCodexParams(messages, nil, "gpt-4o", map[string]any{}, false)
+	if params.Input.OfInputItemList == nil {
+		t.Fatal("Input.OfInputItemList should not be nil")
+	}
+	if len(params.Input.OfInputItemList) != 3 {
+		t.Fatalf("len(Input items) = %d, want 3", len(params.Input.OfInputItemList))
+	}
+	if params.Input.OfInputItemList[1].OfFunctionCall != nil {
+		t.Fatal("orphaned function_call should be removed before sending to Codex")
+	}
+	if params.Input.OfInputItemList[1].OfMessage == nil {
+		t.Fatal("assistant content should be preserved as a normal message")
+	}
+}
+
+func TestBuildCodexParams_DropsOrphanToolOutputAndKeepsMatchedPairs(t *testing.T) {
+	messages := []Message{
+		{Role: "user", Content: "check process status"},
+		{
+			Role: "assistant",
+			ToolCalls: []ToolCall{
+				{ID: "call_keep", Name: "exec", Arguments: map[string]any{"command": "pwd"}},
+				{ID: "call_drop", Name: "list_dir", Arguments: map[string]any{"path": "."}},
+			},
+		},
+		{Role: "tool", Content: "/workspace", ToolCallID: "call_keep"},
+		{Role: "tool", Content: "unexpected", ToolCallID: "call_unknown"},
+	}
+
+	params := buildCodexParams(messages, nil, "gpt-4o", map[string]any{}, false)
+	if params.Input.OfInputItemList == nil {
+		t.Fatal("Input.OfInputItemList should not be nil")
+	}
+	if len(params.Input.OfInputItemList) != 3 {
+		t.Fatalf("len(Input items) = %d, want 3", len(params.Input.OfInputItemList))
+	}
+
+	functionCall := params.Input.OfInputItemList[1].OfFunctionCall
+	if functionCall == nil {
+		t.Fatal("matched assistant tool call should be preserved")
+	}
+	if functionCall.CallID != "call_keep" {
+		t.Fatalf("function call CallID = %q, want %q", functionCall.CallID, "call_keep")
+	}
+
+	functionOutput := params.Input.OfInputItemList[2].OfFunctionCallOutput
+	if functionOutput == nil {
+		t.Fatal("matched function call output should be preserved")
+	}
+	if functionOutput.CallID != "call_keep" {
+		t.Fatalf("function call output CallID = %q, want %q", functionOutput.CallID, "call_keep")
+	}
+}
+
 func TestBuildCodexParams_WithTools(t *testing.T) {
 	tools := []ToolDefinition{
 		{
