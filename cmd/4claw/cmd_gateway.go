@@ -72,7 +72,24 @@ func gatewayCmd() {
 	}
 
 	msgBus := bus.NewMessageBus()
+	healthServer := health.NewServer(cfg.Gateway.Host, cfg.Gateway.Port)
+	healthServer.TouchActivity("startup", "gateway initializing")
+	msgBus.SetPublishHooks(
+		func(msg bus.InboundMessage) {
+			healthServer.TouchActivity("inbound_received", fmt.Sprintf("%s:%s", msg.Channel, msg.ChatID))
+		},
+		func(msg bus.OutboundMessage) {
+			healthServer.TouchActivity("outbound_enqueued", fmt.Sprintf("%s:%s", msg.Channel, msg.ChatID))
+		},
+	)
 	agentLoop := agent.NewAgentLoop(cfg, msgBus, provider)
+	agentLoop.SetActivityHook(func(event string, fields map[string]any) {
+		parts := make([]string, 0, len(fields))
+		for k, v := range fields {
+			parts = append(parts, fmt.Sprintf("%s=%v", k, v))
+		}
+		healthServer.TouchActivity(event, strings.Join(parts, " "))
+	})
 
 	// Print agent startup info
 	fmt.Println("\nAgent Status:")
@@ -212,7 +229,7 @@ func gatewayCmd() {
 		fmt.Printf("Error starting channels: %v\n", err)
 	}
 
-	healthServer := health.NewServer(cfg.Gateway.Host, cfg.Gateway.Port)
+	healthServer.TouchActivity("gateway_ready", "services started")
 	go func() {
 		if err := healthServer.Start(); err != nil && err != http.ErrServerClosed {
 			logger.ErrorCF("health", "Health server error", map[string]any{"error": err.Error()})

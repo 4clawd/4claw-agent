@@ -14,6 +14,7 @@ type Server struct {
 	mu        sync.RWMutex
 	ready     bool
 	checks    map[string]Check
+	activity  map[string]Activity
 	startTime time.Time
 }
 
@@ -24,10 +25,17 @@ type Check struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+type Activity struct {
+	Name      string    `json:"name"`
+	Message   string    `json:"message,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
 type StatusResponse struct {
-	Status string           `json:"status"`
-	Uptime string           `json:"uptime"`
-	Checks map[string]Check `json:"checks,omitempty"`
+	Status   string              `json:"status"`
+	Uptime   string              `json:"uptime"`
+	Checks   map[string]Check    `json:"checks,omitempty"`
+	Activity map[string]Activity `json:"activity,omitempty"`
 }
 
 func NewServer(host string, port int) *Server {
@@ -35,6 +43,7 @@ func NewServer(host string, port int) *Server {
 	s := &Server{
 		ready:     false,
 		checks:    make(map[string]Check),
+		activity:  make(map[string]Activity),
 		startTime: time.Now(),
 	}
 
@@ -90,6 +99,16 @@ func (s *Server) SetReady(ready bool) {
 	s.mu.Unlock()
 }
 
+func (s *Server) TouchActivity(name, message string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.activity[name] = Activity{
+		Name:      name,
+		Message:   message,
+		Timestamp: time.Now(),
+	}
+}
+
 func (s *Server) RegisterCheck(name string, checkFn func() (bool, string)) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -109,8 +128,9 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 
 	uptime := time.Since(s.startTime)
 	resp := StatusResponse{
-		Status: "ok",
-		Uptime: uptime.String(),
+		Status:   "ok",
+		Uptime:   uptime.String(),
+		Activity: s.snapshotActivity(),
 	}
 
 	json.NewEncoder(w).Encode(resp)
@@ -125,13 +145,18 @@ func (s *Server) readyHandler(w http.ResponseWriter, r *http.Request) {
 	for k, v := range s.checks {
 		checks[k] = v
 	}
+	activity := make(map[string]Activity)
+	for k, v := range s.activity {
+		activity[k] = v
+	}
 	s.mu.RUnlock()
 
 	if !ready {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		json.NewEncoder(w).Encode(StatusResponse{
-			Status: "not ready",
-			Checks: checks,
+			Status:   "not ready",
+			Checks:   checks,
+			Activity: activity,
 		})
 		return
 	}
@@ -140,8 +165,9 @@ func (s *Server) readyHandler(w http.ResponseWriter, r *http.Request) {
 		if check.Status == "fail" {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			json.NewEncoder(w).Encode(StatusResponse{
-				Status: "not ready",
-				Checks: checks,
+				Status:   "not ready",
+				Checks:   checks,
+				Activity: activity,
 			})
 			return
 		}
@@ -150,10 +176,21 @@ func (s *Server) readyHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	uptime := time.Since(s.startTime)
 	json.NewEncoder(w).Encode(StatusResponse{
-		Status: "ready",
-		Uptime: uptime.String(),
-		Checks: checks,
+		Status:   "ready",
+		Uptime:   uptime.String(),
+		Checks:   checks,
+		Activity: activity,
 	})
+}
+
+func (s *Server) snapshotActivity() map[string]Activity {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	activity := make(map[string]Activity, len(s.activity))
+	for k, v := range s.activity {
+		activity[k] = v
+	}
+	return activity
 }
 
 func statusString(ok bool) string {

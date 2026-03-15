@@ -38,6 +38,7 @@ type AgentLoop struct {
 	summarizing    sync.Map
 	fallback       *providers.FallbackChain
 	channelManager *channels.Manager
+	activityHook   func(string, map[string]any)
 }
 
 // processOptions configures how a message is processed
@@ -167,6 +168,10 @@ func (al *AgentLoop) Run(ctx context.Context) error {
 			if !ok {
 				continue
 			}
+			al.emitActivity("inbound_consumed", map[string]any{
+				"channel": msg.Channel,
+				"chat_id": msg.ChatID,
+			})
 
 			response, err := al.processMessage(ctx, msg)
 			if err != nil {
@@ -188,6 +193,10 @@ func (al *AgentLoop) Run(ctx context.Context) error {
 				}
 
 				if !alreadySent {
+					al.emitActivity("outbound_dispatch", map[string]any{
+						"channel": msg.Channel,
+						"chat_id": msg.ChatID,
+					})
 					al.bus.PublishOutbound(bus.OutboundMessage{
 						Channel: msg.Channel,
 						ChatID:  msg.ChatID,
@@ -215,6 +224,16 @@ func (al *AgentLoop) RegisterTool(tool tools.Tool) {
 
 func (al *AgentLoop) SetChannelManager(cm *channels.Manager) {
 	al.channelManager = cm
+}
+
+func (al *AgentLoop) SetActivityHook(hook func(string, map[string]any)) {
+	al.activityHook = hook
+}
+
+func (al *AgentLoop) emitActivity(event string, fields map[string]any) {
+	if al.activityHook != nil {
+		al.activityHook(event, fields)
+	}
 }
 
 // RecordLastChannel records the last active channel for this workspace.
@@ -551,8 +570,17 @@ func (al *AgentLoop) runLLMIteration(
 		// Retry loop for context/token errors
 		maxRetries := 2
 		for retry := 0; retry <= maxRetries; retry++ {
+			al.emitActivity("llm_request", map[string]any{
+				"agent_id":  agent.ID,
+				"iteration": iteration,
+				"retry":     retry,
+			})
 			response, err = callLLM()
 			if err == nil {
+				al.emitActivity("llm_response", map[string]any{
+					"agent_id":  agent.ID,
+					"iteration": iteration,
+				})
 				break
 			}
 
@@ -589,6 +617,11 @@ func (al *AgentLoop) runLLMIteration(
 		}
 
 		if err != nil {
+			al.emitActivity("llm_error", map[string]any{
+				"agent_id":  agent.ID,
+				"iteration": iteration,
+				"error":     err.Error(),
+			})
 			logger.ErrorCF("agent", "LLM call failed",
 				map[string]any{
 					"agent_id":  agent.ID,
@@ -679,6 +712,10 @@ func (al *AgentLoop) runLLMIteration(
 			asyncCallback := func(callbackCtx context.Context, result *tools.ToolResult) {
 				// Log the async completion but don't send directly to user
 				// The agent will handle user notification via processSystemMessage
+				al.emitActivity("tool_async_complete", map[string]any{
+					"agent_id": agent.ID,
+					"tool":     tc.Name,
+				})
 				if !result.Silent && result.ForUser != "" {
 					logger.InfoCF("agent", "Async tool completed, agent will handle notification",
 						map[string]any{
@@ -688,6 +725,10 @@ func (al *AgentLoop) runLLMIteration(
 				}
 			}
 
+			al.emitActivity("tool_start", map[string]any{
+				"agent_id": agent.ID,
+				"tool":     tc.Name,
+			})
 			toolResult := agent.Tools.ExecuteWithContext(
 				ctx,
 				tc.Name,
@@ -696,6 +737,10 @@ func (al *AgentLoop) runLLMIteration(
 				opts.ChatID,
 				asyncCallback,
 			)
+			al.emitActivity("tool_complete", map[string]any{
+				"agent_id": agent.ID,
+				"tool":     tc.Name,
+			})
 
 			// Send ForUser content to user immediately if not Silent
 			if !toolResult.Silent && toolResult.ForUser != "" && opts.SendResponse {
