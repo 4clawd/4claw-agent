@@ -14,7 +14,8 @@
       "model_name": "gpt4",
       "model": "openai/gpt-5.2",
       "api_key": "sk-your-openai-key",
-      "api_base": "https://api.openai.com/v1"
+      "api_base": "https://api.openai.com/v1",
+      "request_timeout_seconds": 120
     },
     {
       "model_name": "claude-sonnet-4.6",

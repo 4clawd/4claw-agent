@@ -394,8 +394,9 @@ type ModelConfig struct {
 	Workspace   string `json:"workspace,omitempty"`    // Workspace path for CLI-based providers
 
 	// Optional optimizations
-	RPM            int    `json:"rpm,omitempty"`              // Requests per minute limit
-	MaxTokensField string `json:"max_tokens_field,omitempty"` // Field name for max tokens (e.g., "max_completion_tokens")
+	RPM                   int    `json:"rpm,omitempty"`                     // Requests per minute limit
+	MaxTokensField        string `json:"max_tokens_field,omitempty"`        // Field name for max tokens (e.g., "max_completion_tokens")
+	RequestTimeoutSeconds int    `json:"request_timeout_seconds,omitempty"` // HTTP request timeout in seconds for model API calls
 }
 
 // Validate checks if the ModelConfig has all required fields.

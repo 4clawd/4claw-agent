@@ -8,6 +8,7 @@ package providers
 
 import (
 	"context"
+	"time"
 
 	"github.com/4claw/4claw/pkg/providers/openai_compat"
 )
@@ -22,9 +23,30 @@ func NewHTTPProvider(apiKey, apiBase, proxy string) *HTTPProvider {
 	}
 }
 
+func NewHTTPProviderWithTimeout(apiKey, apiBase, proxy string, timeout time.Duration) *HTTPProvider {
+	return &HTTPProvider{
+		delegate: openai_compat.NewProviderWithTimeout(apiKey, apiBase, proxy, timeout),
+	}
+}
+
 func NewHTTPProviderWithMaxTokensField(apiKey, apiBase, proxy, maxTokensField string) *HTTPProvider {
 	return &HTTPProvider{
 		delegate: openai_compat.NewProviderWithMaxTokensField(apiKey, apiBase, proxy, maxTokensField),
+	}
+}
+
+func NewHTTPProviderWithMaxTokensFieldAndTimeout(
+	apiKey, apiBase, proxy, maxTokensField string,
+	timeout time.Duration,
+) *HTTPProvider {
+	return &HTTPProvider{
+		delegate: openai_compat.NewProviderWithMaxTokensFieldAndTimeout(
+			apiKey,
+			apiBase,
+			proxy,
+			maxTokensField,
+			timeout,
+		),
 	}
 }
 
