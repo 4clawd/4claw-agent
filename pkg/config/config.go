@@ -394,9 +394,10 @@ type ModelConfig struct {
 	Workspace   string `json:"workspace,omitempty"`    // Workspace path for CLI-based providers
 
 	// Optional optimizations
-	RPM                   int    `json:"rpm,omitempty"`                     // Requests per minute limit
+	RPM                   int   `json:"rpm,omitempty"`                     // Requests per minute limit
 	MaxTokensField        string `json:"max_tokens_field,omitempty"`        // Field name for max tokens (e.g., "max_completion_tokens")
-	RequestTimeoutSeconds int    `json:"request_timeout_seconds,omitempty"` // HTTP request timeout in seconds for model API calls
+	RequestTimeoutSeconds int   `json:"request_timeout_seconds,omitempty"` // HTTP request timeout in seconds for model API calls
+	SupportsToolCalling   *bool `json:"supports_tool_calling,omitempty"`   // Whether this model should receive tool definitions and tool-call history
 }
 
 // Validate checks if the ModelConfig has all required fields.
@@ -408,6 +409,13 @@ func (c *ModelConfig) Validate() error {
 		return fmt.Errorf("model is required")
 	}
 	return nil
+}
+
+func (c *ModelConfig) SupportsToolCallingEnabled() bool {
+	if c == nil || c.SupportsToolCalling == nil {
+		return true
+	}
+	return *c.SupportsToolCalling
 }
 
 type GatewayConfig struct {

@@ -48,13 +48,30 @@ func (cb *ContextBuilder) SetToolsRegistry(registry *tools.ToolRegistry) {
 	cb.tools = registry
 }
 
-func (cb *ContextBuilder) getIdentity() string {
+func (cb *ContextBuilder) getIdentity(supportsToolCalling bool) string {
 	now := time.Now().Format("2006-01-02 15:04 (Monday)")
 	workspacePath, _ := filepath.Abs(filepath.Join(cb.workspace))
 	runtime := fmt.Sprintf("%s %s, Go %s", runtime.GOOS, runtime.GOARCH, runtime.Version())
 
 	// Build tools section dynamically
-	toolsSection := cb.buildToolsSection()
+	toolsSection := cb.buildToolsSection(supportsToolCalling)
+
+	importantRules := `## Important Rules
+
+1. **Tool calling is disabled for this model** - Respond using the conversation context only. Do not invent tool executions.
+
+2. **Be helpful and accurate** - If a task requires external actions, clearly say this model configuration cannot execute tools.
+
+3. **File-based memory updates are disabled** - Do not claim to update workspace memory files in this mode.`
+	if supportsToolCalling {
+		importantRules = `## Important Rules
+
+1. **ALWAYS use tools** - When you need to perform an action (schedule reminders, send messages, execute commands, etc.), you MUST call the appropriate tool. Do NOT just say you'll do it or pretend to do it.
+
+2. **Be helpful and accurate** - When using tools, briefly explain what you're doing.
+
+3. **Memory** - When interacting with me if something seems memorable, update %s/memory/MEMORY.md`
+	}
 
 	return fmt.Sprintf(`# 4claw
 
@@ -74,18 +91,12 @@ Your workspace is at: %s
 
 %s
 
-## Important Rules
-
-1. **ALWAYS use tools** - When you need to perform an action (schedule reminders, send messages, execute commands, etc.), you MUST call the appropriate tool. Do NOT just say you'll do it or pretend to do it.
-
-2. **Be helpful and accurate** - When using tools, briefly explain what you're doing.
-
-3. **Memory** - When interacting with me if something seems memorable, update %s/memory/MEMORY.md`,
-		now, runtime, workspacePath, workspacePath, workspacePath, workspacePath, toolsSection, workspacePath)
+%s`,
+		now, runtime, workspacePath, workspacePath, workspacePath, workspacePath, toolsSection, fmt.Sprintf(importantRules, workspacePath))
 }
 
-func (cb *ContextBuilder) buildToolsSection() string {
-	if cb.tools == nil {
+func (cb *ContextBuilder) buildToolsSection(supportsToolCalling bool) string {
+	if cb.tools == nil || !supportsToolCalling {
 		return ""
 	}
 
@@ -108,11 +119,11 @@ func (cb *ContextBuilder) buildToolsSection() string {
 	return sb.String()
 }
 
-func (cb *ContextBuilder) BuildSystemPrompt() string {
+func (cb *ContextBuilder) BuildSystemPrompt(supportsToolCalling bool) string {
 	parts := []string{}
 
 	// Core identity section
-	parts = append(parts, cb.getIdentity())
+	parts = append(parts, cb.getIdentity(supportsToolCalling))
 
 	// Bootstrap files
 	bootstrapContent := cb.LoadBootstrapFiles()
@@ -120,9 +131,9 @@ func (cb *ContextBuilder) BuildSystemPrompt() string {
 		parts = append(parts, bootstrapContent)
 	}
 
-	// Skills - show summary, AI can read full content with read_file tool
+	// Skills are only useful when the model can call tools such as read_file.
 	skillsSummary := cb.skillsLoader.BuildSkillsSummary()
-	if skillsSummary != "" {
+	if supportsToolCalling && skillsSummary != "" {
 		parts = append(parts, fmt.Sprintf(`# Skills
 
 The following skills extend your capabilities. To use a skill, read its SKILL.md file using the read_file tool.
@@ -165,11 +176,12 @@ func (cb *ContextBuilder) BuildMessages(
 	currentMessage string,
 	media []string,
 	channel, chatID string,
+	supportsToolCalling bool,
 ) []providers.Message {
 	messages := []providers.Message{}
 	currentMessage = cb.decorateMessageWithMedia(currentMessage, media)
 
-	systemPrompt := cb.BuildSystemPrompt()
+	systemPrompt := cb.BuildSystemPrompt(supportsToolCalling)
 
 	// Add Current Session info if provided
 	if channel != "" && chatID != "" {
@@ -198,7 +210,7 @@ func (cb *ContextBuilder) BuildMessages(
 		systemPrompt += "\n\n## Summary of Previous Conversation\n\n" + summary
 	}
 
-	history = sanitizeHistoryForProvider(history)
+	history = sanitizeHistoryForProvider(history, supportsToolCalling)
 
 	messages = append(messages, providers.Message{
 		Role:    "system",
@@ -243,13 +255,26 @@ func (cb *ContextBuilder) decorateMessageWithMedia(currentMessage string, media 
 	return strings.TrimSpace(sb.String())
 }
 
-func sanitizeHistoryForProvider(history []providers.Message) []providers.Message {
+func sanitizeHistoryForProvider(history []providers.Message, supportsToolCalling bool) []providers.Message {
 	if len(history) == 0 {
 		return history
 	}
 
 	sanitized := make([]providers.Message, 0, len(history))
 	for _, msg := range history {
+		if !supportsToolCalling {
+			switch msg.Role {
+			case "tool":
+				logger.DebugCF("agent", "Dropping tool history for model without tool-calling support", map[string]any{})
+				continue
+			case "assistant":
+				if len(msg.ToolCalls) > 0 {
+					logger.DebugCF("agent", "Dropping assistant tool-call history for model without tool-calling support", map[string]any{})
+					continue
+				}
+			}
+		}
+
 		switch msg.Role {
 		case "tool":
 			if len(sanitized) == 0 {

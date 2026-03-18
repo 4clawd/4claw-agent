@@ -441,6 +441,7 @@ func (al *AgentLoop) runAgentLoop(ctx context.Context, agent *AgentInstance, opt
 		opts.Media,
 		opts.Channel,
 		opts.ChatID,
+		agent.SupportsToolCalling,
 	)
 
 	userMessageForSession := agent.ContextBuilder.decorateMessageWithMedia(opts.UserMessage, opts.Media)
@@ -514,7 +515,10 @@ func (al *AgentLoop) runLLMIteration(
 			})
 
 		// Build tool definitions
-		providerToolDefs := agent.Tools.ToProviderDefs()
+		providerToolDefs := []providers.ToolDefinition{}
+		if agent.SupportsToolCalling {
+			providerToolDefs = agent.Tools.ToProviderDefs()
+		}
 
 		// Log LLM request details
 		logger.DebugCF("agent", "LLM request",
@@ -609,7 +613,7 @@ func (al *AgentLoop) runLLMIteration(
 				newSummary := agent.Sessions.GetSummary(opts.SessionKey)
 				messages = agent.ContextBuilder.BuildMessages(
 					newHistory, newSummary, "",
-					nil, opts.Channel, opts.ChatID,
+					nil, opts.Channel, opts.ChatID, agent.SupportsToolCalling,
 				)
 				continue
 			}
@@ -629,6 +633,18 @@ func (al *AgentLoop) runLLMIteration(
 					"error":     err.Error(),
 				})
 			return "", iteration, fmt.Errorf("LLM call failed after retries: %w", err)
+		}
+
+		// Models without tool-calling support must be treated as text-only even if a backend
+		// returns tool_calls payloads unexpectedly.
+		if !agent.SupportsToolCalling && len(response.ToolCalls) > 0 {
+			logger.WarnCF("agent", "Ignoring tool calls returned by model without tool-calling support",
+				map[string]any{
+					"agent_id":  agent.ID,
+					"iteration": iteration,
+					"count":     len(response.ToolCalls),
+				})
+			response.ToolCalls = nil
 		}
 
 		// Check if no tool calls - we're done

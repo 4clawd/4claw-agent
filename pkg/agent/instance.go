@@ -19,6 +19,7 @@ type AgentInstance struct {
 	Name           string
 	Model          string
 	Fallbacks      []string
+	SupportsToolCalling bool
 	Workspace      string
 	MaxIterations  int
 	MaxTokens      int
@@ -45,6 +46,10 @@ func NewAgentInstance(
 
 	model := resolveAgentModel(agentCfg, defaults)
 	fallbacks := resolveAgentFallbacks(agentCfg, defaults)
+	supportsToolCalling := true
+	if modelCfg, err := cfg.GetModelConfig(model); err == nil && modelCfg != nil {
+		supportsToolCalling = modelCfg.SupportsToolCallingEnabled()
+	}
 
 	restrict := defaults.RestrictToWorkspace
 	toolsRegistry := tools.NewToolRegistry()
@@ -100,6 +105,7 @@ func NewAgentInstance(
 		Name:           agentName,
 		Model:          model,
 		Fallbacks:      fallbacks,
+		SupportsToolCalling: supportsToolCalling,
 		Workspace:      workspace,
 		MaxIterations:  maxIter,
 		MaxTokens:      maxTokens,
