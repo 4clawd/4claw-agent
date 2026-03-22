@@ -119,11 +119,12 @@ func registerSharedTools(
 
 		// Message tool
 		messageTool := tools.NewMessageTool()
-		messageTool.SetSendCallback(func(channel, chatID, content string) error {
+		messageTool.SetSendCallback(func(channel, chatID, content, media string) error {
 			msgBus.PublishOutbound(bus.OutboundMessage{
 				Channel: channel,
 				ChatID:  chatID,
 				Content: content,
+				Media:   media,
 			})
 			return nil
 		})

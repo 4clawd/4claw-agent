@@ -113,6 +113,8 @@ func main() {
 		migrateCmd()
 	case "auth":
 		authCmd()
+	case "channels":
+		channelsCmd()
 	case "cron":
 		cronCmd()
 	case "skills":
@@ -181,6 +183,7 @@ func printHelp() {
 	fmt.Println("  onboard     Initialize 4claw configuration and workspace")
 	fmt.Println("  agent       Interact with the agent directly (supports -c/--config <path>)")
 	fmt.Println("  auth        Manage authentication (login, logout, status)")
+	fmt.Println("  channels    Manage channel-specific login and state")
 	fmt.Println("  gateway     Start 4claw gateway (supports -c/--config <path>)")
 	fmt.Println("  status      Show 4claw status")
 	fmt.Println("  cron        Manage scheduled tasks")

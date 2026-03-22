@@ -182,6 +182,7 @@ type AgentDefaults struct {
 type ChannelsConfig struct {
 	WhatsApp WhatsAppConfig `json:"whatsapp"`
 	Telegram TelegramConfig `json:"telegram"`
+	WeChat   WeChatConfig   `json:"wechat"`
 	Feishu   FeishuConfig   `json:"feishu"`
 	Discord  DiscordConfig  `json:"discord"`
 	MaixCam  MaixCamConfig  `json:"maixcam"`
@@ -205,6 +206,16 @@ type TelegramConfig struct {
 	Token     string              `json:"token"      env:"FOURCLAW_CHANNELS_TELEGRAM_TOKEN"`
 	Proxy     string              `json:"proxy"      env:"FOURCLAW_CHANNELS_TELEGRAM_PROXY"`
 	AllowFrom FlexibleStringSlice `json:"allow_from" env:"FOURCLAW_CHANNELS_TELEGRAM_ALLOW_FROM"`
+}
+
+type WeChatConfig struct {
+	Enabled           bool                `json:"enabled"              env:"FOURCLAW_CHANNELS_WECHAT_ENABLED"`
+	AccountID         string              `json:"account_id"           env:"FOURCLAW_CHANNELS_WECHAT_ACCOUNT_ID"`
+	Token             string              `json:"token"                env:"FOURCLAW_CHANNELS_WECHAT_TOKEN"`
+	BaseURL           string              `json:"base_url"             env:"FOURCLAW_CHANNELS_WECHAT_BASE_URL"`
+	CDNBaseURL        string              `json:"cdn_base_url"         env:"FOURCLAW_CHANNELS_WECHAT_CDN_BASE_URL"`
+	AllowFrom         FlexibleStringSlice `json:"allow_from"           env:"FOURCLAW_CHANNELS_WECHAT_ALLOW_FROM"`
+	LongPollTimeoutMS int                 `json:"long_poll_timeout_ms" env:"FOURCLAW_CHANNELS_WECHAT_LONG_POLL_TIMEOUT_MS"`
 }
 
 type FeishuConfig struct {

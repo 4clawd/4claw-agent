@@ -34,6 +34,15 @@ func DefaultConfig() *Config {
 				Token:     "",
 				AllowFrom: FlexibleStringSlice{},
 			},
+			WeChat: WeChatConfig{
+				Enabled:           false,
+				AccountID:         "",
+				Token:             "",
+				BaseURL:           "https://ilinkai.weixin.qq.com",
+				CDNBaseURL:        "https://novac2c.cdn.weixin.qq.com/c2c",
+				AllowFrom:         FlexibleStringSlice{},
+				LongPollTimeoutMS: 35000,
+			},
 			Feishu: FeishuConfig{
 				Enabled:           false,
 				AppID:             "",

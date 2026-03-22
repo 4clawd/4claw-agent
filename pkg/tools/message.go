@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-type SendCallback func(channel, chatID, content string) error
+type SendCallback func(channel, chatID, content, media string) error
 
 type MessageTool struct {
 	sendCallback   SendCallback
@@ -23,7 +23,7 @@ func (t *MessageTool) Name() string {
 }
 
 func (t *MessageTool) Description() string {
-	return "Send a message to user on a chat channel. Use this when you want to communicate something."
+	return "Send a text message or media file to a user on a chat channel. Use this when you want to communicate something."
 }
 
 func (t *MessageTool) Parameters() map[string]any {
@@ -42,8 +42,11 @@ func (t *MessageTool) Parameters() map[string]any {
 				"type":        "string",
 				"description": "Optional: target chat/user ID",
 			},
+			"media": map[string]any{
+				"type":        "string",
+				"description": "Optional: local file path or remote URL to send as media",
+			},
 		},
-		"required": []string{"content"},
 	}
 }
 
@@ -63,13 +66,15 @@ func (t *MessageTool) SetSendCallback(callback SendCallback) {
 }
 
 func (t *MessageTool) Execute(ctx context.Context, args map[string]any) *ToolResult {
-	content, ok := args["content"].(string)
-	if !ok {
-		return &ToolResult{ForLLM: "content is required", IsError: true}
-	}
+	content, _ := args["content"].(string)
 
 	channel, _ := args["channel"].(string)
 	chatID, _ := args["chat_id"].(string)
+	media, _ := args["media"].(string)
+
+	if content == "" && media == "" {
+		return &ToolResult{ForLLM: "content or media is required", IsError: true}
+	}
 
 	if channel == "" {
 		channel = t.defaultChannel
@@ -86,7 +91,7 @@ func (t *MessageTool) Execute(ctx context.Context, args map[string]any) *ToolRes
 		return &ToolResult{ForLLM: "Message sending not configured", IsError: true}
 	}
 
-	if err := t.sendCallback(channel, chatID, content); err != nil {
+	if err := t.sendCallback(channel, chatID, content, media); err != nil {
 		return &ToolResult{
 			ForLLM:  fmt.Sprintf("sending message: %v", err),
 			IsError: true,

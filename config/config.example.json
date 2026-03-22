@@ -56,6 +56,15 @@
         "YOUR_USER_ID"
       ]
     },
+    "wechat": {
+      "enabled": false,
+      "account_id": "YOUR_WECHAT_ACCOUNT_ID",
+      "token": "",
+      "base_url": "https://ilinkai.weixin.qq.com",
+      "cdn_base_url": "https://novac2c.cdn.weixin.qq.com/c2c",
+      "allow_from": [],
+      "long_poll_timeout_ms": 35000
+    },
     "discord": {
       "enabled": false,
       "token": "YOUR_DISCORD_BOT_TOKEN",

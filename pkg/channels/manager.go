@@ -59,6 +59,19 @@ func (m *Manager) initChannels() error {
 		}
 	}
 
+	if m.config.Channels.WeChat.Enabled {
+		logger.DebugC("channels", "Attempting to initialize WeChat channel")
+		wechat, err := NewWeChatChannel(m.config.Channels.WeChat, m.bus)
+		if err != nil {
+			logger.ErrorCF("channels", "Failed to initialize WeChat channel", map[string]any{
+				"error": err.Error(),
+			})
+		} else {
+			m.channels["wechat"] = wechat
+			logger.InfoC("channels", "WeChat channel enabled successfully")
+		}
+	}
+
 	if m.config.Channels.WhatsApp.Enabled && m.config.Channels.WhatsApp.BridgeURL != "" {
 		logger.DebugC("channels", "Attempting to initialize WhatsApp channel")
 		whatsapp, err := NewWhatsAppChannel(m.config.Channels.WhatsApp, m.bus)

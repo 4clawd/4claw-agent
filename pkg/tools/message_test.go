@@ -11,7 +11,7 @@ func TestMessageTool_Execute_Success(t *testing.T) {
 	tool.SetContext("test-channel", "test-chat-id")
 
 	var sentChannel, sentChatID, sentContent string
-	tool.SetSendCallback(func(channel, chatID, content string) error {
+	tool.SetSendCallback(func(channel, chatID, content, media string) error {
 		sentChannel = channel
 		sentChatID = chatID
 		sentContent = content
@@ -63,7 +63,7 @@ func TestMessageTool_Execute_WithCustomChannel(t *testing.T) {
 	tool.SetContext("default-channel", "default-chat-id")
 
 	var sentChannel, sentChatID string
-	tool.SetSendCallback(func(channel, chatID, content string) error {
+	tool.SetSendCallback(func(channel, chatID, content, media string) error {
 		sentChannel = channel
 		sentChatID = chatID
 		return nil
@@ -99,7 +99,7 @@ func TestMessageTool_Execute_SendFailure(t *testing.T) {
 	tool.SetContext("test-channel", "test-chat-id")
 
 	sendErr := errors.New("network error")
-	tool.SetSendCallback(func(channel, chatID, content string) error {
+	tool.SetSendCallback(func(channel, chatID, content, media string) error {
 		return sendErr
 	})
 
@@ -136,7 +136,7 @@ func TestMessageTool_Execute_MissingContent(t *testing.T) {
 	tool.SetContext("test-channel", "test-chat-id")
 
 	ctx := context.Background()
-	args := map[string]any{} // content missing
+	args := map[string]any{} // content and media missing
 
 	result := tool.Execute(ctx, args)
 
@@ -144,8 +144,8 @@ func TestMessageTool_Execute_MissingContent(t *testing.T) {
 	if !result.IsError {
 		t.Error("Expected IsError=true for missing content")
 	}
-	if result.ForLLM != "content is required" {
-		t.Errorf("Expected ForLLM 'content is required', got '%s'", result.ForLLM)
+	if result.ForLLM != "content or media is required" {
+		t.Errorf("Expected ForLLM 'content or media is required', got '%s'", result.ForLLM)
 	}
 }
 
@@ -153,7 +153,7 @@ func TestMessageTool_Execute_NoTargetChannel(t *testing.T) {
 	tool := NewMessageTool()
 	// No SetContext called, so defaultChannel and defaultChatID are empty
 
-	tool.SetSendCallback(func(channel, chatID, content string) error {
+	tool.SetSendCallback(func(channel, chatID, content, media string) error {
 		return nil
 	})
 
@@ -225,9 +225,8 @@ func TestMessageTool_Parameters(t *testing.T) {
 	}
 
 	// Check required properties
-	required, ok := params["required"].([]string)
-	if !ok || len(required) != 1 || required[0] != "content" {
-		t.Error("Expected 'content' to be required")
+	if _, ok := params["required"]; ok {
+		t.Error("Did not expect hard required fields after media support")
 	}
 
 	// Check content property
